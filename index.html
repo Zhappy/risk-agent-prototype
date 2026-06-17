@@ -1,0 +1,4368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>风控Agent团队 - 后台管理平台原型 v2.3</title>
+<style>
+:root {
+  /* Ant Design 色彩体系 */
+  --primary: #1677FF;
+  --primary-hover: #4096FF;
+  --primary-active: #0958D9;
+  --success: #52C41A;
+  --warning: #FAAD14;
+  --danger: #FF4D4F;
+  --error: #FF4D4F;
+  --info: #1677FF;
+  
+  /* 中性色 */
+  --text: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-muted: rgba(0, 0, 0, 0.45);
+  --text-disabled: rgba(0, 0, 0, 0.25);
+  --border: #D9D9D9;
+  --border-split: #F0F0F0;
+  --bg: #F5F5F5;
+  --bg-container: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  
+  /* 侧边栏 */
+  --sidebar: #001529;
+  --sidebar-text: rgba(255, 255, 255, 0.65);
+  --sidebar-active: #1677FF;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-border: transparent;
+  
+  /* 布局 */
+  --header-height: 64px;
+  --sidebar-width: 208px;
+  --content-padding: 24px;
+  
+  /* 圆角 */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  
+  /* 阴影 */
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --shadow-2: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --shadow-3: 0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 12px 48px 16px rgba(0, 0, 0, 0.03);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 14px;
+  line-height: 1.5715;
+  color: var(--text);
+  background: var(--bg);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; }
+
+/* Sidebar - 白色背景风格 */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-container);
+  color: var(--text);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--border-split);
+}
+
+.logo {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-split);
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  margin-right: 12px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.menu-group-title {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.menu-group-title .arrow {
+  font-size: 10px;
+  margin-left: auto;
+  transition: transform 0.3s;
+}
+
+.menu-group-title.collapsed .arrow { transform: rotate(-90deg); }
+
+.sub-menu { overflow: hidden; transition: max-height 0.3s ease; }
+.sub-menu.collapsed { max-height: 0; }
+
+.menu-item {
+  padding: 10px 16px 10px 32px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 8px;
+  border-radius: var(--radius-md);
+}
+
+.menu-item:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.menu-item.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.header {
+  height: var(--header-height);
+  background: var(--bg-container);
+  border-bottom: 1px solid var(--border-split);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-1);
+}
+
+.breadcrumb { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+.breadcrumb span { color: var(--text); font-weight: 600; }
+
+.header-right { display: flex; align-items: center; gap: 24px; }
+
+.header-user { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Content */
+.content { flex: 1; overflow-y: auto; padding: var(--content-padding); background: var(--bg); }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Cards - Ant Design 风格 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-1);
+  transition: box-shadow 0.3s;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-2);
+}
+
+.stat-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+.stat-value { font-size: 30px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.stat-change { font-size: 13px; margin-top: 8px; }
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--danger); }
+
+/* Charts */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-1);
+}
+
+.chart-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 16px; }
+
+.chart-placeholder {
+  height: 240px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  background: var(--bg);
+}
+
+/* Alert List */
+.alert-list {
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.alert-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-split);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.alert-header span {
+  float: right;
+  font-weight: 400;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-split);
+  font-size: 14px;
+}
+
+.alert-item:last-child { border-bottom: none; }
+
+.alert-icon { width: 20px; text-align: center; flex-shrink: 0; font-size: 16px; }
+
+.alert-time { color: var(--text-muted); font-size: 13px; white-space: nowrap; }
+
+.alert-msg { flex: 1; color: var(--text); }
+
+.alert-action { color: var(--primary); cursor: pointer; font-size: 13px; }
+
+.alert-action:hover { text-decoration: underline; }
+
+/* Table */
+.table-wrap {
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+}
+
+.table-top {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-split);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border-split); }
+
+th {
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+tr:hover td { background: rgba(0, 0, 0, 0.02); }
+
+/* Tags - Ant Design 风格 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.tag-green { background: #F6FFED; color: #389E0D; border-color: #B7EB8F; }
+.tag-yellow { background: #FFFBE6; color: #D48806; border-color: #FFE58F; }
+.tag-red { background: #FFF2F0; color: #CF1322; border-color: #FFCCC7; }
+.tag-gray { background: #F5F5F5; color: var(--text-muted); border-color: #D9D9D9; }
+.tag-blue { background: #E6F7FF; color: #096DD9; border-color: #91CAFF; }
+.tag-purple { background: #F9F0FF; color: #722ED1; border-color: #D3ADF7; }
+
+/* Action Links */
+.action-link {
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 16px;
+}
+
+.action-link:hover { text-decoration: underline; }
+
+/* Filter Bar */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-bar input, .filter-bar select {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--bg-container);
+  color: var(--text);
+  transition: border-color 0.3s;
+}
+
+.filter-bar input:focus, .filter-bar select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.filter-bar input { width: 200px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border-split); margin-bottom: 24px; }
+
+.tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.3s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-weight: 500;
+}
+
+.tab:hover { color: var(--primary); }
+
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Detail Page */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.detail-title { font-size: 20px; font-weight: 600; color: var(--text); }
+
+.detail-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+.back-link {
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.back-link:hover { text-decoration: underline; }
+
+/* Summary Bar */
+.summary-bar {
+  display: flex;
+  gap: 24px;
+  padding: 16px 20px;
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-1);
+}
+
+.summary-bar strong { color: var(--text); font-weight: 600; }
+
+/* Agent Cards */
+.agent-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.agent-card {
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-1);
+  transition: box-shadow 0.3s;
+}
+
+.agent-card:hover { box-shadow: var(--shadow-2); }
+
+.agent-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+
+.agent-card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+}
+
+.agent-card-name { font-weight: 600; font-size: 15px; color: var(--text); }
+
+.agent-card-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+.agent-card-stats { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+.agent-card-actions { display: flex; justify-content: space-between; align-items: center; }
+
+/* Toggle Switch */
+.toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--border);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.toggle input:checked + .toggle-slider { background: var(--primary); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* Progress Bar */
+.progress-bar { width: 100px; height: 8px; background: var(--border-split); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
+.progress-fill { height: 100%; border-radius: 4px; background: var(--success); }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--bg-container);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 520px;
+  box-shadow: var(--shadow-3);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-split);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text);
+}
+
+.modal-close { cursor: pointer; color: var(--text-muted); font-size: 18px; background: none; border: none; }
+.modal-close:hover { color: var(--text); }
+
+.modal-body { padding: 24px; }
+
+.form-group { margin-bottom: 20px; }
+
+.form-label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  transition: all 0.3s;
+}
+
+.form-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.modal-footer {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border-split);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 200;
+  background: var(--bg-container);
+  border: 1px solid var(--border-split);
+  border-radius: var(--radius-lg);
+  padding: 12px 20px;
+  box-shadow: var(--shadow-3);
+  font-size: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.toast.show { display: flex; }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+
+/* Summary Detail Drawer */
+.summary-drawer-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+}
+.summary-drawer-overlay.active { display: block; }
+
+.summary-drawer {
+  position: fixed;
+  top: 0; right: 0;
+  width: 560px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--bg-container);
+  border-left: 1px solid var(--border-split);
+  box-shadow: var(--shadow-3);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 101;
+}
+
+.summary-drawer-overlay.active .summary-drawer { transform: translateX(0); }
+
+.summary-drawer-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-split);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text);
+}
+
+.summary-drawer-close { cursor: pointer; color: var(--text-muted); font-size: 18px; background: none; border: none; }
+.summary-drawer-close:hover { color: var(--text); }
+
+.summary-drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* Drawer */
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+}
+.drawer-overlay.active { display: block; }
+
+.drawer {
+  position: fixed;
+  top: 0; right: 0;
+  width: 520px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--bg-container);
+  border-left: 1px solid var(--border-split);
+  box-shadow: var(--shadow-3);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 101;
+}
+
+.drawer-overlay.active .drawer { transform: translateX(0); }
+
+.drawer-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-split);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text);
+}
+
+.drawer-close { cursor: pointer; color: var(--text-muted); font-size: 18px; background: none; border: none; }
+.drawer-close:hover { color: var(--text); }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+
+.drawer-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-split);
+}
+
+.drawer-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.drawer-info-grid .label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.drawer-info-grid .value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Chat messages in drawer */
+.chat-msg {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary);
+}
+
+.chat-msg-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.chat-msg-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Post items in drawer */
+.post-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-split);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.post-author {
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.post-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.post-content {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.post-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Keyword tags */
+.keyword-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Secondary text */
+.secondary { color: var(--text-secondary); font-size: 13px; }
+
+/* Buttons - Ant Design 风格 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-container);
+  color: var(--text);
+  transition: all 0.3s;
+  font-weight: 500;
+  line-height: 1.5715;
+}
+
+.btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+
+.btn-sm { padding: 4px 12px; font-size: 13px; }
+
+.btn-danger { color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: var(--danger); color: #fff; }
+
+.btn-warning { background: var(--warning); color: #fff; border-color: var(--warning); }
+
+/* Pagination */
+.pagination { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 16px 24px; font-size: 14px; color: var(--text-secondary); }
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--bg-container);
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+.pagination-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.pagination-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.pagination-btn:disabled { color: var(--text-muted); cursor: not-allowed; background: var(--bg); border-color: var(--border); }
+
+/* Checkbox group */
+.checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+.checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); cursor: pointer; }
+.checkbox-group label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); }
+
+/* Code Block */
+.code-block {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+  .agent-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .sidebar { width: 64px; }
+  .logo { padding: 0; justify-content: center; }
+  .logo-icon { margin-right: 0; }
+  .menu-item { padding: 10px; justify-content: center; }
+  .menu-item span { display: none; }
+  .card-grid { grid-template-columns: 1fr; }
+  .agent-cards { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+    <div class="logo">
+      风控Agent后台
+    </div>
+    <div class="sidebar-nav" id="sidebarNav">
+      <div class="menu-group-title" onclick="toggleGroup(this)" data-group="main">
+        主菜单 <span class="arrow">▼</span>
+      </div>
+      <div class="sub-menu" data-group="main">
+        <div class="menu-item active" data-route="dashboard" onclick="navigate('dashboard')">
+          概览
+        </div>
+        <div class="menu-item" data-route="products" onclick="navigate('products')">
+          产品管理
+        </div>
+        <div class="menu-item" data-route="agents" onclick="navigate('agents')">
+          Agent 管理
+        </div>
+        <div class="menu-item" data-route="tokens" onclick="navigate('tokens')">
+          Token 用量
+        </div>
+        <div class="menu-item" data-route="billing" onclick="navigate('billing')">
+          计费管理 <span class="tag tag-red" style="margin-left:auto;font-size:10px;">2</span>
+        </div>
+        <div class="menu-item" data-route="models" onclick="navigate('models')">
+          模型管理
+        </div>
+      </div>
+      <div class="menu-group-title" onclick="toggleGroup(this)" data-group="data">
+        舆情管理 <span class="arrow">▼</span>
+      </div>
+      <div class="sub-menu" data-group="data">
+        <div class="menu-item" data-route="channels" onclick="navigate('channels')">
+          渠道管理
+        </div>
+        <div class="menu-item" data-route="summary-data" onclick="navigate('summary-data')">
+          摘要数据
+        </div>
+        <div class="menu-item" data-route="transform-tasks" onclick="navigate('transform-tasks')">
+          转化任务
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="header">
+      <div class="breadcrumb" id="breadcrumb">概览</div>
+      <div class="header-right">
+        <span style="font-size:12px;color:var(--text-muted)">系统正常</span>
+        <div class="header-user">
+          <div class="avatar"></div>
+          <span>馆长</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content" id="pageContent">
+      <div id="page-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="channel-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑渠道</div>
+      <button class="modal-close" onclick="hideModal('channel-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">渠道名称 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" value="TG频道">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">如：QQ群、TG群、TG频道、Discord、闲鱼、Bilibili 等</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">渠道类型</div>
+        <div class="form-input" style="background:var(--bg)">私域群聊</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">当前状态</div>
+        <div class="form-input" style="background:var(--bg)"> 启用</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注/说明 <span style="color:var(--danger)">*</span></div>
+        <textarea class="form-textarea" style="min-height:100px;">@waigua_123，主要讨论王者外挂，活跃度高</textarea>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">用于说明渠道来源、用途、特征等信息</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('channel-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('channel-edit-modal');showToast('渠道已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="channel-obj-add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增目标</div>
+      <button class="modal-close" onclick="hideModal('channel-obj-add-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">目标标识 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" placeholder="如：@waigua_123 或 QQ群-87654321">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">TG频道/群名、QQ群号等唯一标识</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">绑定产品 <span style="color:var(--danger)">*</span></div>
+        <select class="form-input">
+          <option>通用</option>
+          <option>王者荣耀</option>
+          <option>和平精英</option>
+          <option>原神</option>
+          <option>英雄联盟</option>
+        </select>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">选择该目标关联的产品，可选「通用」</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注/说明</div>
+        <textarea class="form-textarea" placeholder="描述该目标的用途、特征等信息"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('channel-obj-add-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('channel-obj-add-modal');showToast('目标已创建','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="channel-obj-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑目标</div>
+      <button class="modal-close" onclick="hideModal('channel-obj-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">目标标识 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" value="@waigua_123">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">TG频道/群名、QQ群号等唯一标识</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">绑定产品 <span style="color:var(--danger)">*</span></div>
+        <select class="form-input">
+          <option>通用</option>
+          <option selected>王者荣耀</option>
+          <option>和平精英</option>
+          <option>原神</option>
+          <option>英雄联盟</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注/说明</div>
+        <textarea class="form-textarea">主要讨论王者外挂，活跃度高</textarea>
+      </div>
+      <div class="form-group">
+        <div class="form-label">状态</div>
+        <select class="form-input"><option>监控中</option><option>暂停监控</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('channel-obj-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('channel-obj-edit-modal');showToast('目标已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="channel-web-obj-add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增目标</div>
+      <button class="modal-close" onclick="hideModal('channel-web-obj-add-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">关键词 <span style="color:var(--danger)">*</span></div>
+        <textarea class="form-textarea" placeholder="如：王者代练,王者外挂,王者辅助" style="min-height:60px;"></textarea>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">多个关键词用英文逗号","分隔</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">绑定产品 <span style="color:var(--danger)">*</span></div>
+        <select class="form-input">
+          <option>通用</option>
+          <option>王者荣耀</option>
+          <option>和平精英</option>
+          <option>原神</option>
+          <option>英雄联盟</option>
+        </select>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">选择该目标关联的产品，可选「通用」</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">爬取页数 <span style="color:var(--danger)">*</span></div>
+        <input type="number" class="form-input" value="5" style="width:100px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">每次爬取搜索结果的页数</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注/说明</div>
+        <textarea class="form-textarea" placeholder="描述该目标的用途、特征等信息"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('channel-web-obj-add-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('channel-web-obj-add-modal');showToast('目标已创建','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="channel-web-obj-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑目标</div>
+      <button class="modal-close" onclick="hideModal('channel-web-obj-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">关键词 <span style="color:var(--danger)">*</span></div>
+        <textarea class="form-textarea" style="min-height:60px;">王者代练,王者外挂,王者辅助</textarea>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">多个关键词用英文逗号","分隔</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">绑定产品 <span style="color:var(--danger)">*</span></div>
+        <select class="form-input">
+          <option>通用</option>
+          <option selected>王者荣耀</option>
+          <option>和平精英</option>
+          <option>原神</option>
+          <option>英雄联盟</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">爬取页数 <span style="color:var(--danger)">*</span></div>
+        <input type="number" class="form-input" value="5" style="width:100px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">每次爬取搜索结果的页数</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">备注/说明</div>
+        <textarea class="form-textarea">售卖王者代练+外挂辅助，月销200+</textarea>
+      </div>
+      <div class="form-group">
+        <div class="form-label">状态</div>
+        <select class="form-input"><option>监控中</option><option>暂停监控</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('channel-web-obj-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('channel-web-obj-edit-modal');showToast('目标已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="conversation-detail-overlay">
+  <div class="drawer" style="width: 900px; max-width: 90vw;">
+    <div class="drawer-header">
+      <div class="drawer-title">对话详情</div>
+      <button class="drawer-close" onclick="hideDrawer('conversation-detail-overlay')">×</button>
+    </div>
+    <div class="drawer-body" style="padding: 0; display: flex; height: calc(100vh - 120px); min-height: 500px;">
+      <!-- 左侧：日期筛选 + 会话列表 -->
+      <div style="width: 240px; border-right: 1px solid var(--border-split); display: flex; flex-direction: column; background: var(--bg-container);">
+        <!-- 日期筛选 -->
+        <div style="padding: 16px; border-bottom: 1px solid var(--border-split);">
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">日期</div>
+          <select style="width: 100%; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; background: var(--bg-container);">
+            <option>2026-06-16</option>
+            <option>2026-06-15</option>
+            <option>2026-06-14</option>
+            <option>2026-06-13</option>
+          </select>
+        </div>
+        <!-- 会话列表 -->
+        <div style="flex: 1; overflow-y: auto; padding: 8px;">
+          <div style="font-size: 12px; color: var(--text-secondary); padding: 8px 8px 4px;">会话列表</div>
+          <!-- 会话项 1：当前选中 -->
+          <div style="padding: 10px 12px; border-radius: var(--radius-sm); background: var(--primary-light); border: 1px solid var(--primary); cursor: pointer; margin-bottom: 6px;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">AI舆情分析员</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">10:30 · 3轮 · 25积分</div>
+          </div>
+          <!-- 会话项 2 -->
+          <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">AI舆情分析员</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">14:15 · 5轮 · 42积分</div>
+          </div>
+          <!-- 会话项 3 -->
+          <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">AI威胁情报员</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">09:20 · 2轮 · 18积分</div>
+          </div>
+          <!-- 会话项 4 -->
+          <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">AI舆情分析员</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">16:45 · 4轮 · 31积分</div>
+          </div>
+          <!-- 会话项 5 -->
+          <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">AI舆情分析员</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">11:00 · 1轮 · 8积分</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧：上下结构 -->
+      <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+        <!-- 上半：会话统计 -->
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-split); background: var(--bg-container);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <div style="font-size: 16px; font-weight: 600; color: var(--text);">AI舆情分析员 · 06-16 10:30</div>
+            <button style="padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; background: var(--bg-container); color: var(--text); cursor: pointer;">导出</button>
+          </div>
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px;">
+            <div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">输入 Token</div>
+              <div style="font-weight: 600; color: var(--text);">850</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">输出 Token</div>
+              <div style="font-weight: 600; color: var(--text);">400</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">累计消耗积分</div>
+              <div style="font-weight: 600; color: var(--text);">25</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">会话轮数</div>
+              <div style="font-weight: 600; color: var(--text);">3</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">模型</div>
+              <div style="font-weight: 600; color: var(--text);">DeepSeek-V3</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 下半：消息气泡 -->
+        <div style="flex: 1; overflow-y: auto; padding: 20px; background: var(--bg);">
+          <div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px;">
+            
+            <!-- 用户消息 1 -->
+            <div style="display: flex; justify-content: flex-end;">
+              <div style="max-width: 80%;">
+                <div style="background: var(--bg-container); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+                  帮我分析一下最近的外挂情况，主要关注王者荣耀这款游戏的最新动态。
+                </div>
+                <div style="text-align: right; font-size: 11px; color: var(--text-muted); margin-top: 4px;">10:30:00</div>
+              </div>
+            </div>
+            
+            <!-- Agent 消息 1 -->
+            <div style="display: flex; justify-content: flex-start;">
+              <div style="max-width: 80%;">
+                <div style="background: var(--bg-container); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+                  <div style="font-weight: 500; color: var(--primary); margin-bottom: 6px;">AI舆情分析员</div>
+                  <div>根据近期数据分析，外挂讨论量较上周增长15%，主要集中在以下渠道：</div>
+                  <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+                    <div>TG频道 @waigua_123：讨论量 +23%</div>
+                    <div>闲鱼关键词「王者外挂」：新增商品 45 件</div>
+                    <div>B站相关视频：新增 12 个</div>
+                  </div>
+                  <div style="margin-top: 8px;">建议重点关注 TG 频道和闲鱼平台的最新动态。</div>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; align-items: center;">
+                  <span>10:30:05</span>
+                  <span style="color: var(--text-secondary);">输入 320 Token</span>
+                  <span style="color: var(--text-secondary);">输出 280 Token</span>
+                  <span style="color: var(--text-secondary);">消耗 12 积分</span>
+                  <span style="color: var(--text-secondary);">耗时 4.2s</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 用户消息 2 -->
+            <div style="display: flex; justify-content: flex-end;">
+              <div style="max-width: 80%;">
+                <div style="background: var(--bg-container); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+                  能帮我生成一份详细的舆情报告吗？需要包含具体的渠道分布和趋势分析。
+                </div>
+                <div style="text-align: right; font-size: 11px; color: var(--text-muted); margin-top: 4px;">10:31:20</div>
+              </div>
+            </div>
+            
+            <!-- Agent 消息 2 -->
+            <div style="display: flex; justify-content: flex-start;">
+              <div style="max-width: 80%;">
+                <div style="background: var(--bg-container); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+                  <div style="font-weight: 500; color: var(--primary); margin-bottom: 6px;">AI舆情分析员</div>
+                  <div>已为您生成舆情报告，包含以下内容：</div>
+                  <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+                    <div>渠道分布：TG 35% | 闲鱼 28% | B站 18% | QQ群 12% | 其他 7%</div>
+                    <div>趋势分析：近7天讨论量呈上升趋势，峰值出现在周末</div>
+                    <div>关键词分析：「外挂」「破解」「代练」为高频词</div>
+                    <div>风险预警：发现 3 个新型外挂工具，建议立即关注</div>
+                  </div>
+                  <div style="margin-top: 8px;">报告已保存至「摘要数据」模块，您可以随时查看。</div>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; align-items: center;">
+                  <span>10:32:18</span>
+                  <span style="color: var(--text-secondary);">输入 530 Token</span>
+                  <span style="color: var(--text-secondary);">输出 120 Token</span>
+                  <span style="color: var(--text-secondary);">消耗 13 积分</span>
+                  <span style="color: var(--text-secondary);">耗时 56.8s</span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="model-add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增模型</div>
+      <button class="modal-close" onclick="hideModal('model-add-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">模型名称 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" placeholder="如：DeepSeek-V3">
+      </div>
+      <div class="form-group">
+        <div class="form-label">API Key <span style="color:var(--danger)">*</span></div>
+        <input type="password" class="form-input" placeholder="sk-...">
+      </div>
+      <div class="form-group">
+        <div class="form-label">API 端点</div>
+        <input type="text" class="form-input" placeholder="https://api.example.com/v1/chat/completions">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">模型服务的 API 端点地址</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">积分汇率 <span style="color:var(--danger)">*</span></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" class="form-input" value="1000" style="width:100px;text-align:right;">
+          <span style="font-size:13px;color:var(--text-muted);">Token =</span>
+          <input type="number" class="form-input" value="1" style="width:80px;text-align:right;">
+          <span style="font-size:13px;color:var(--text-muted);">积分</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">每消耗多少 Token 计为 1 积分，例：1000 Token = 1 积分</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('model-add-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('model-add-modal');showToast('模型已添加','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="model-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑模型</div>
+      <button class="modal-close" onclick="hideModal('model-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">模型名称</div>
+        <div class="form-input" style="background:var(--bg)">DeepSeek-V3</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">API Key</div>
+        <input type="password" class="form-input" value="••••••••••••••••">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">加密存储，仅用于调用模型服务</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">API 端点</div>
+        <input type="text" class="form-input" value="https://api.deepseek.com/v1/chat/completions">
+      </div>
+      <div class="form-group">
+        <div class="form-label">积分汇率</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" class="form-input" value="1000" style="width:100px;text-align:right;">
+          <span style="font-size:13px;color:var(--text-muted);">Token =</span>
+          <input type="number" class="form-input" value="1" style="width:80px;text-align:right;">
+          <span style="font-size:13px;color:var(--text-muted);">积分</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">每消耗多少 Token 计为 1 积分</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">状态</div>
+        <select class="form-input"><option>启用</option><option>停用</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('model-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('model-edit-modal');showToast('模型已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="model-rate-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">调整倍率</div>
+      <button class="modal-close" onclick="hideModal('model-rate-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">模型名称</div>
+        <div class="form-input" style="background:var(--bg)">DeepSeek-V3</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">倍率 <span style="color:var(--danger)">*</span></div>
+        <input type="number" class="form-input" value="1.0" step="0.1" style="width:120px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">1.0 = 原价，2.0 = 双倍计费</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('model-rate-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('model-rate-modal');showToast('倍率已调整','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="model-switch-confirm-modal">
+  <div class="modal" style="max-width: 480px;">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:20px;">⚠️</span>
+        <span>高危操作确认 — 切换模型</span>
+      </div>
+      <button class="modal-close" onclick="hideModal('model-switch-confirm-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#FFF2F0;border:1px solid #FFCCC7;border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
+        <div style="font-weight:600;color:var(--danger);margin-bottom:8px;">⚠️ 警告：此操作影响全平台所有产品</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+          切换模型后，所有产品、所有 Agent 将即时使用新模型。此操作不可撤销，请确认已充分评估影响。
+        </div>
+      </div>
+      
+      <div style="margin-bottom:20px;">
+        <div style="font-weight:500;margin-bottom:12px;">切换信息</div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;">
+          <span style="color:var(--text-muted);">当前模型</span>
+          <span style="font-weight:500;">DeepSeek-V3</span>
+          <span style="color:var(--text-muted);">目标模型</span>
+          <span style="font-weight:500;color:var(--primary);">DeepSeek-R1</span>
+          <span style="color:var(--text-muted);">影响范围</span>
+          <span>12 个产品 · 36 个 Agent</span>
+          <span style="color:var(--text-muted);">预计影响</span>
+          <span>积分汇率变化：1,000T=1积分 → 1,000T=4积分</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="form-label">请输入 "确认切换" 以继续</div>
+        <input type="text" class="form-input" id="model-switch-confirm-input" placeholder="确认切换" style="margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--text-muted);">此操作需要二次确认，防止误操作</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('model-switch-confirm-modal')">取消</button>
+      <button class="btn btn-danger" onclick="confirmModelSwitch()">确认切换</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function confirmModelSwitch() {
+  const input = document.getElementById('model-switch-confirm-input');
+  if (input.value !== '确认切换') {
+    showToast('请输入正确的确认文本', 'error');
+    input.style.borderColor = 'var(--danger)';
+    return;
+  }
+  hideModal('model-switch-confirm-modal');
+  showToast('模型切换成功，全平台已生效', 'success');
+  // 实际场景中这里会调用 API 切换模型
+}
+</script>
+
+<div class="modal-overlay" id="prompt-private-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <div class="modal-title">编辑私域群聊 · 摘要提取 Prompt</div>
+      <button class="modal-close" onclick="hideModal('prompt-private-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">System Prompt</div>
+        <textarea class="form-textarea" style="min-height:200px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;">你是一名舆情分析专家。请对以下群聊/频道聊天记录进行分析，提取与 { 绑定产品 } 舆情相关的核心内容，并按要求输出 JSON 格式的摘要结果。
+
+分类维度：{ 分类标签罗列 }
+
+分析要求：
+1、提取话题摘要（不限摘要数量，一句话总结话题，每个总结少于 50 字）
+2、为每个话题摘要进行分类（可多选）
+3、分析判断每条消息与产品相关性，输出存在相关性消息的数量与占比
+4、分析判断每条消息的情感倾向，统计情感分布（正面/中性/负面占比）
+5、关键发现：提取重要的实体（名称、账号、价格、联系方式、群号等）、总结群消息内容与趋势
+
+输出的详情JSON格式：
+{
+  "msgCnt": 1240,
+  "relatedMsgCut": 890,
+  "relatedMsgPer": 0.718,
+  "posMsgPer": 0.050,
+  "neuMsgPer": 0.150,
+  "negMsgPer": 0.800,
+  "topics": [
+    {
+      "summary": "外挂销售集中讨论",
+      "msgCut": 620,
+      "negMsgPer": 0.920,
+      "type": ["cheat"]
+    }
+  ],
+  "descovery": "该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号（账号分别为：xxxx，xxxx，xxxx），建议重点关注。"
+}
+
+注意事项：
+- 过滤噪音
+- 区分事实和推测
+- 关键发现需要提取重要信息如卖家账号、联系方式、交易价格等</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('prompt-private-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('prompt-private-modal');showToast('私域群聊 Prompt 已保存','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="prompt-public-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <div class="modal-title">编辑公域网站 · 摘要提取 Prompt</div>
+      <button class="modal-close" onclick="hideModal('prompt-public-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">System Prompt</div>
+        <textarea class="form-textarea" style="min-height:200px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;">你是一名舆情分析专家。请对以下公域网站记录进行分析，提取与 { 绑定产品 } 舆情相关的核心内容，并按要求输出 JSON 格式的分析结果。
+
+分类维度：{ 分类标签罗列 }
+
+分析要求：
+1、分析每条数据与产品相关性，仅保存存在相关性的记录，统计相关性记录的数量与占比，去除噪音
+2、每条记录的内容提取摘要（摘要少于 50 字）
+3、为每条记录进行分类（可多选）
+4、分析判断每条记录的情感倾向，统计情感分布（正面/中性/负面占比）
+5、关键发现：提取重要的实体（名称、账号、价格、联系方式、群号等）、总结趋势
+
+输出的详情JSON格式：
+{
+  "msgCut": 1240,
+  "relatedMsgCut": 890,
+  "relatedMsgPer": 0.718,
+  "posMsgPer": 0.050,
+  "neuMsgPer": 0.150,
+  "negMsgPer": 0.800,
+  "relatedTopics": [
+    {
+      "title": "王者荣耀无限金币破解版",
+      "summary": "无限金币售卖，下载地址：http://123.com/38881.html",
+      "orientation": "neg",
+      "type": ["cheat"],
+      "author": "@fuyun444",
+      "pubTime": 18283819929,
+      "link": "https://xianyu.com/xiangqingye-399911"
+    }
+  ],
+  "descovery": "该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号（账号分别为：xxxx，xxxx，xxxx），建议重点关注。"
+}
+
+注意事项：
+- 过滤噪音
+- 区分事实和推测
+- 关键发现需要提取重要信息如卖家账号、联系方式、交易价格等</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('prompt-public-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('prompt-public-modal');showToast('公域网站 Prompt 已保存','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="recharge-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">积分充值</div>
+      <button class="modal-close" onclick="hideModal('recharge-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">产品</div>
+        <div class="form-input" style="background:var(--bg)">王者荣耀</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">充值积分 <span style="color:var(--danger)">*</span></div>
+        <input type="number" class="form-input" placeholder="输入积分数量" style="width:160px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">1 积分 = ￥0.1</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('recharge-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('recharge-modal');showToast('充值申请已提交','success')">确认充值</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rule-add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增规则</div>
+      <button class="modal-close" onclick="hideModal('rule-add-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">规则名称 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" placeholder="如：高危外挂标记">
+      </div>
+      <div class="form-group">
+        <div class="form-label">条件</div>
+        <select class="form-input"><option>风险等级 = critical</option><option>风险等级 = high</option><option>标签包含 外挂</option></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">动作</div>
+        <select class="form-input"><option>自动标记+通知</option><option>记录日志</option><option>发送告警</option></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">优先级</div>
+        <input type="number" class="form-input" value="1" style="width:80px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('rule-add-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('rule-add-modal');showToast('规则已创建','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rule-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑规则</div>
+      <button class="modal-close" onclick="hideModal('rule-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">规则名称</div>
+        <input type="text" class="form-input" value="高危外挂标记">
+      </div>
+      <div class="form-group">
+        <div class="form-label">条件</div>
+        <select class="form-input"><option>风险等级 = critical</option><option>风险等级 = high</option><option>标签包含 外挂</option></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">动作</div>
+        <select class="form-input"><option>自动标记+通知</option><option>记录日志</option><option>发送告警</option></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">优先级</div>
+        <input type="number" class="form-input" value="1" style="width:80px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('rule-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('rule-edit-modal');showToast('规则已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="skill-detail-modal" onclick="hideModal('skill-detail-modal')">
+<div class="drawer" onclick="event.stopPropagation()">
+<div class="drawer-header">
+<div class="drawer-title">skill 详情</div>
+<button class="drawer-close" onclick="hideModal('skill-detail-modal')">×</button>
+</div>
+<div class="drawer-body">
+<div class="form-group">
+<label>skill名称</label>
+<div class="form-text">舆情数据查询</div>
+</div>
+<div class="form-group">
+<label>类型</label>
+<div class="form-text">查询</div>
+</div>
+<div class="form-group">
+<label>状态</label>
+<div class="form-text"><span class="tag tag-green">启用</span></div>
+</div>
+<div class="form-group">
+<label>描述说明</label>
+<div class="form-text">从舆情数据库中查询指定时间范围内的舆情数据，支持按关键词、渠道、情感等维度筛选。</div>
+</div>
+<div class="form-group">
+<label>skill 文件内容</label>
+<div class="code-block" style="background:#f5f5f5;border:1px solid #d9d9d9;border-radius:4px;padding:12px;font-family:monospace;font-size:13px;line-height:1.6;max-height:300px;overflow:auto;">
+<pre># 舆情数据查询 Skill
+
+## 功能描述
+从舆情数据库中查询指定时间范围内的舆情数据。
+
+## 输入参数
+- start_date: 开始日期 (YYYY-MM-DD)
+- end_date: 结束日期 (YYYY-MM-DD)
+- keywords: 关键词列表 (可选)
+- channels: 渠道筛选 (可选)
+- sentiment: 情感倾向筛选 (可选)
+
+## 输出格式
+```json
+{
+  "total": 120,
+  "records": [...]
+}
+```
+
+## 使用示例
+查询最近7天关于"外挂"的舆情数据。</pre>
+</div>
+</div>
+<div class="form-group">
+<label>创建时间</label>
+<div class="form-text">2026-05-15 10:30:00</div>
+</div>
+<div class="form-group">
+<label>更新时间</label>
+<div class="form-text">2026-06-10 14:22:00</div>
+</div>
+</div>
+</div>
+</div>
+<div class="drawer-overlay" id="skill-logs-modal" onclick="hideModal('skill-logs-modal')">
+<div class="drawer" style="width:840px;" onclick="event.stopPropagation()">
+<div class="drawer-header">
+<div class="drawer-title">skill 调用日志</div>
+<button class="drawer-close" onclick="hideModal('skill-logs-modal')">×</button>
+</div>
+<div class="drawer-body">
+<div class="filter-bar" style="margin-bottom:16px;">
+<select class="form-control" style="width:140px;">
+<option>最近7天</option>
+<option>最近30天</option>
+<option>最近90天</option>
+</select>
+<select class="form-control" style="width:120px;">
+<option>全部状态</option>
+<option>成功</option>
+<option>失败</option>
+</select>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>调用时间</th><th>调用参数</th><th>返回结果摘要</th><th>状态</th><th>耗时</th></tr></thead>
+<tbody>
+<tr><td>06-17 10:30:05</td><td>{"keywords":["外挂"],"days":7}</td><td>查询到 45 条相关记录</td><td><span class="tag tag-green">成功</span></td><td>120ms</td></tr>
+<tr><td>06-17 09:15:22</td><td>{"keywords":["代练"],"days":1}</td><td>查询到 12 条相关记录</td><td><span class="tag tag-green">成功</span></td><td>85ms</td></tr>
+<tr><td>06-16 18:45:10</td><td>{"keywords":["封号"],"days":30}</td><td>查询到 230 条相关记录</td><td><span class="tag tag-green">成功</span></td><td>210ms</td></tr>
+<tr><td>06-16 14:20:33</td><td>{"keywords":["辅助"],"days":7}</td><td>参数错误：days 超出范围</td><td><span class="tag tag-red">失败</span></td><td>15ms</td></tr>
+<tr><td>06-16 11:05:47</td><td>{"keywords":["脚本"],"days":7}</td><td>查询到 8 条相关记录</td><td><span class="tag tag-green">成功</span></td><td>95ms</td></tr>
+</tbody>
+</table>
+</div>
+<div class="pagination" style="margin-top:16px;text-align:right;">
+<span style="color:#888;font-size:13px;margin-right:12px;">共 128 条</span>
+<button class="btn btn-sm">上一页</button>
+<button class="btn btn-sm">1</button>
+<button class="btn btn-sm">2</button>
+<button class="btn btn-sm">3</button>
+<button class="btn btn-sm">下一页</button>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="tag-add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增分类标签</div>
+      <button class="modal-close" onclick="hideModal('tag-add-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">标签名称 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" placeholder="如：外挂">
+      </div>
+      <div class="form-group">
+        <div class="form-label">编码 <span style="color:var(--danger)">*</span></div>
+        <input type="text" class="form-input" placeholder="如：cheat">
+      </div>
+      <div class="form-group">
+        <div class="form-label">说明</div>
+        <input type="text" class="form-input" placeholder="标签用途说明">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Prompt 注入文本</div>
+        <textarea class="form-textarea" placeholder="在System Prompt中注入的提示文本，用于引导LLM识别该标签"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('tag-add-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('tag-add-modal');showToast('标签已创建','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tag-edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">编辑分类标签</div>
+      <button class="modal-close" onclick="hideModal('tag-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">标签名称</div>
+        <input type="text" class="form-input" value="外挂">
+      </div>
+      <div class="form-group">
+        <div class="form-label">编码</div>
+        <div class="form-input" style="background:var(--bg)">cheat</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">说明</div>
+        <input type="text" class="form-input" value="外挂交易、讨论">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Prompt 注入文本</div>
+        <textarea class="form-textarea">注意识别：透视、自瞄、全防、锁头、无后座等关键词</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('tag-edit-modal')">取消</button>
+      <button class="btn btn-primary" onclick="hideModal('tag-edit-modal');showToast('标签已更新','success')">保存</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ===== Shared Scripts =====
+// Tab switching
+function switchTab(btn, tabId) {
+  const container = btn.closest('.tabs').nextElementSibling;
+  if (!container) return;
+  
+  // Update tab buttons
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  
+  // Update tab content
+  const contentContainer = btn.closest('.tabs').parentElement;
+  contentContainer.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+// Overview view switching
+function switchOverviewView(view) {
+  document.querySelectorAll('[data-oview]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.oview === view);
+  });
+  document.querySelectorAll('#oview-platform, #oview-data, #oview-cost').forEach(el => {
+    el.classList.toggle('active', el.id === 'oview-' + view);
+  });
+}
+
+// Sidebar group toggle
+function toggleGroup(el) {
+  el.classList.toggle('collapsed');
+  const group = el.dataset.group;
+  document.querySelectorAll('.sub-menu[data-group="' + group + '"]').forEach(menu => {
+    menu.classList.toggle('collapsed');
+  });
+}
+
+// Modal
+function showModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.add('active');
+}
+function hideModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.remove('active');
+}
+
+// Toast
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.className = 'toast show ' + (type || '');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Expand/Collapse
+function toggleExpand(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// Drawer
+function showDrawer(id) {
+  const overlay = document.getElementById(id);
+  if (overlay) overlay.classList.add('active');
+}
+function hideDrawer(id) {
+  const overlay = document.getElementById(id);
+  if (overlay) overlay.classList.remove('active');
+}
+
+// Summary Detail Drawer
+function showSummaryDrawer(id) {
+  const overlay = document.getElementById(id);
+  if (overlay) overlay.classList.add('active');
+}
+function hideSummaryDrawer(id) {
+  const overlay = document.getElementById(id);
+  if (overlay) overlay.classList.remove('active');
+}
+
+// Close modal/drawer on overlay click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('active');
+  }
+  if (e.target.classList.contains('drawer-overlay')) {
+    e.target.classList.remove('active');
+  }
+  if (e.target.classList.contains('summary-drawer-overlay')) {
+    e.target.classList.remove('active');
+  }
+});
+
+
+// ===== Page Router (Inline) =====
+const pageRoutes = {
+    'agent-detail': `<div class="page active"><div class="back-link" onclick="navigate('agents')">← 返回Agent列表</div>
+<div class="detail-title" style="margin-top:12px">AI舆情分析员</div>
+<div class="summary-bar">
+<span>启用产品数：<strong>8/12</strong></span>
+<span>今日Token：<strong>450,000</strong></span>
+<span>成功率：<strong>99.7%</strong></span>
+<span>平均延迟：<strong>1.1s</strong></span>
+<span class="tag tag-green">健康</span>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab(this, 'atab-products')">绑定产品</button>
+<button class="tab" onclick="switchTab(this, 'atab-token')">Token用量</button>
+<button class="tab" onclick="switchTab(this, 'atab-monitor')">调用监控</button>
+<button class="tab" onclick="switchTab(this, 'atab-skills')">skill管理</button>
+<button class="tab" onclick="switchTab(this, 'atab-log')">操作日志</button>
+</div>
+<div class="tab-content active" id="atab-products">
+<div class="table-wrap">
+<table>
+<thead><tr><th>产品名称</th><th>状态</th><th>本月Token</th><th>模型</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>王者荣耀</td><td><span class="tag tag-green">已开通</span></td><td>1,120,000</td><td>DeepSeek-V3</td><td><button class="btn btn-sm btn-danger">停用</button></td></tr>
+<tr><td>和平精英</td><td><span class="tag tag-green">已开通</span></td><td>896,000</td><td>DeepSeek-V3</td><td><button class="btn btn-sm btn-danger">停用</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="tab-content" id="atab-token">
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">Token 趋势</div><div class="chart-placeholder">折线图 — 近30天Token消耗趋势</div></div>
+<div class="chart-card"><div class="chart-title">按产品分布</div><div class="chart-placeholder">柱状图 — 各产品Token消耗</div></div>
+</div>
+</div>
+<div class="tab-content" id="atab-monitor">
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">调用量趋势</div><div class="chart-placeholder">折线图 — 近24h调用量</div></div>
+<div class="chart-card"><div class="chart-title">延迟分布</div><div class="chart-placeholder">柱状图 — P50/P95/P99 延迟</div></div>
+</div>
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">成功率趋势</div><div class="chart-placeholder">折线图 — 近7天成功率</div></div>
+<div class="chart-card"><div class="chart-title">错误分布</div><div class="chart-placeholder">饼图 — 超时60% | 限流30% | 其他10%</div></div>
+</div>
+</div>
+<div class="tab-content" id="atab-skills">
+<div class="table-wrap">
+<table>
+<thead><tr><th>skill名称</th><th>类型</th><th>说明</th><th>近7天调用</th><th>状态</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>舆情数据查询</td><td>查询</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="从舆情数据库查询指定时间范围内的舆情数据，支持多维度筛选">从舆情数据库查询指定时间范围内的舆情数据，支持多维度筛选</td><td>1,245</td><td><label class="toggle"><input type="checkbox" checked onchange="showToast('skill状态已更新','success')"><span class="toggle-slider"></span></label></td><td><button class="btn btn-sm" onclick="showModal('skill-detail-modal')">查看详情</button> <button class="btn btn-sm" onclick="showModal('skill-logs-modal')">查看调用日志</button></td></tr>
+<tr><td>竞品分析报告生成</td><td>分析</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="自动生成竞品分析报告，包含市场动态、功能对比、用户评价等维度">自动生成竞品分析报告，包含市场动态、功能对比、用户评价等维度</td><td>86</td><td><label class="toggle"><input type="checkbox" checked onchange="showToast('skill状态已更新','success')"><span class="toggle-slider"></span></label></td><td><button class="btn btn-sm" onclick="showModal('skill-detail-modal')">查看详情</button> <button class="btn btn-sm" onclick="showModal('skill-logs-modal')">查看调用日志</button></td></tr>
+<tr><td>日报生成</td><td>报告</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="自动生成每日舆情日报，包含关键指标、热点话题、风险预警">自动生成每日舆情日报，包含关键指标、热点话题、风险预警</td><td>7</td><td><label class="toggle"><input type="checkbox" onchange="showToast('skill状态已更新','success')"><span class="toggle-slider"></span></label></td><td><button class="btn btn-sm" onclick="showModal('skill-detail-modal')">查看详情</button> <button class="btn btn-sm" onclick="showModal('skill-logs-modal')">查看调用日志</button></td></tr>
+<tr><td>敏感词检测</td><td>工具</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="实时检测文本中的敏感词、违规内容，支持自定义词库">实时检测文本中的敏感词、违规内容，支持自定义词库</td><td>3,562</td><td><label class="toggle"><input type="checkbox" checked onchange="showToast('skill状态已更新','success')"><span class="toggle-slider"></span></label></td><td><button class="btn btn-sm" onclick="showModal('skill-detail-modal')">查看详情</button> <button class="btn btn-sm" onclick="showModal('skill-logs-modal')">查看调用日志</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="tab-content" id="atab-log">
+<div class="table-wrap">
+<table>
+<thead><tr><th>时间</th><th>详情</th><th>操作人</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>06-01 09:00</td><td><span class="tag tag-green">启用</span></td><td>王者荣耀 开通AI舆情分析员</td><td>馆长</td></tr>
+</tbody>
+</table>
+</div>
+</div></div>`,
+    'agents': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">Agent 管理</div>
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">总启用产品</div><div class="stat-value">36/72</div></div>
+<div class="stat-card"><div class="stat-label">今日总调用</div><div class="stat-value">28,500 次</div></div>
+<div class="stat-card"><div class="stat-label">平均响应时间</div><div class="stat-value">1.2s</div></div>
+<div class="stat-card"><div class="stat-label">异常率</div><div class="stat-value">0.3%</div></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Agent</th><th>启用产品数</th><th>今日Token</th><th>成功率</th><th>当前模型</th><th>操作</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="action-link" onclick="navigate('agent-detail')">AI舆情分析员</span></td>
+<td>8/12</td><td>450,000</td>
+<td><div class="progress-bar"><div class="progress-fill" style="width:99.7%;"></div></div>99.7%</td>
+<td>DS-V3</td>
+<td><button class="btn btn-sm" onclick="navigate('agent-detail')">详情</button></td>
+</tr>
+<tr>
+<td><span class="action-link" onclick="navigate('agent-detail')">AI技术分析员</span></td>
+<td>5/12</td><td>896,000</td>
+<td><div class="progress-bar"><div class="progress-fill" style="width:98.5%;"></div></div>98.5%</td>
+<td>DS-V3</td>
+<td><button class="btn btn-sm" onclick="navigate('agent-detail')">详情</button></td>
+</tr>
+</tbody>
+</table>
+</div></div>`,
+    'billing': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">计费管理 — 积分概览</div>
+<div class="filter-bar" style="margin-bottom:16px;">
+<select><option>本月</option><option>上月</option><option>近30天</option></select>
+</div>
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">本月积分消耗</div><div class="stat-value">12,450</div><div class="stat-change up">↑18% 环比</div></div>
+<div class="stat-card"><div class="stat-label">本月积分充值</div><div class="stat-value">20,000</div></div>
+<div class="stat-card"><div class="stat-label">全平台总余额</div><div class="stat-value">58,320</div></div>
+<div class="stat-card"><div class="stat-label">告警中的产品</div><div class="stat-value" style="color:var(--warning);">2</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">迷你枪战 / 球球大作战</div></div>
+</div>
+
+
+<div style="background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:16px 20px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+<span style="font-weight:500;font-size:14px;">积分汇率配置（按模型）</span>
+<span style="font-size:12px;color:var(--text-muted);"></span>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>模型</th><th>积分汇率</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek-V3 <span class="tag tag-blue">当前</span></td><td>1,000 Token = 1 积分</td><td>性价比最优，大部分场景</td></tr>
+<tr><td>DeepSeek-R1</td><td>1,000 Token = 4 积分</td><td>深度推理，复杂逆向分析</td></tr>
+<tr><td>GPT-4 Turbo</td><td>1,000 Token = 30 积分</td><td>高精度策略建议生成</td></tr>
+<tr><td>Qwen3-Max</td><td>1,000 Token = 2 积分</td><td>国产合规，国内部署</td></tr>
+</tbody>
+</table>
+</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">公式：消耗积分 = Token 消耗量 ÷ 每积分对应 Token 数</div>
+</div>
+
+
+<div class="table-wrap">
+<div class="table-top"><span>产品积分余额一览</span></div>
+<table>
+<thead><tr><th>产品</th><th>当前余额</th><th>日均消耗</th><th>预估可用</th><th>每日上限</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td><span class="action-link">王者荣耀</span></td><td>25,000</td><td>1,450</td><td>17天</td><td>2,000/天</td><td><span class="tag tag-green">正常</span></td></tr>
+<tr><td><span class="action-link">和平精英</span></td><td>8,500</td><td>890</td><td>9天</td><td>1,500/天</td><td><span class="tag tag-green">正常</span></td></tr>
+<tr><td><span class="action-link">迷你枪战精英</span></td><td>2,100</td><td>520</td><td>4天</td><td>800/天</td><td><span class="tag tag-yellow">告警</span></td></tr>
+<tr><td><span class="action-link">球球大作战</span></td><td>350</td><td>120</td><td>2天</td><td>500/天</td><td><span class="tag tag-red">余额低</span></td></tr>
+</tbody>
+</table>
+</div></div>`,
+    'channel-detail-web': `<div class="page active"><div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <span class="action-link" onclick="navigate('channels')" style="font-size:14px;">← 返回渠道管理</span>
+  </div>
+  <div class="detail-title" style="margin-bottom:20px;">闲鱼 — 目标管理</div>
+
+  <!-- 渠道信息 Bar -->
+  <div style="display:flex;gap:16px;margin-bottom:24px;">
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">目标</div>
+      <div style="font-size:28px;font-weight:600;">12</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">监控中</div>
+      <div style="font-size:28px;font-weight:600;color:var(--success);">10</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">暂停监控</div>
+      <div style="font-size:28px;font-weight:600;color:var(--danger);">2</div>
+    </div>
+  </div>
+
+  <!-- 目标列表 -->
+  <div class="filter-bar">
+    <input type="text" placeholder="搜索关键词..." style="width:180px;">
+    <select><option>全部产品</option><option>通用</option><option>王者荣耀</option><option>和平精英</option><option>原神</option></select>
+    <select><option>全部状态</option><option>监控中</option><option>暂停监控</option></select>
+    <button class="btn btn-primary" onclick="showModal('channel-web-obj-add-modal')">+ 新增目标</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>关键词</th><th>绑定产品</th><th>爬取页数</th><th>备注/说明</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>王者代练,王者外挂,王者辅助</td>
+          <td>王者荣耀</td>
+          <td>5</td>
+          <td>售卖王者代练+外挂辅助，月销200+</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-web-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+        <tr>
+          <td>和平精英破解,和平精英辅助</td>
+          <td>和平精英</td>
+          <td>3</td>
+          <td>售卖破解包+防封教程</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-web-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+        <tr>
+          <td>原神私服,原神GM后台</td>
+          <td>原神</td>
+          <td>2</td>
+          <td>原神私服+GM后台售卖</td>
+          <td><span class="tag tag-gray">暂停监控</span></td>
+          <td><span class="action-link" onclick="showModal('channel-web-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已启动','success')">启动</span></td>
+        </tr>
+        <tr>
+          <td>游戏外挂,游戏辅助,破解版</td>
+          <td>通用</td>
+          <td>10</td>
+          <td>多游戏外挂合集，全平台覆盖</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-web-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="summary-bar" style="margin-top:16px;">
+    <span>共 <strong>12</strong> 条</span>
+    <span>监控中 <span style="color:#52c41a;">10</span></span>
+    <span>暂停监控 <span style="color:#d9d9d9;">2</span></span>
+  </div></div>`,
+    'channel-detail': `<div class="page active"><div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <span class="action-link" onclick="navigate('channels')" style="font-size:14px;">← 返回渠道管理</span>
+  </div>
+  <div class="detail-title" style="margin-bottom:20px;">TG频道 — 目标管理</div>
+
+  <!-- 渠道信息 Bar -->
+  <div style="display:flex;gap:16px;margin-bottom:24px;">
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">目标</div>
+      <div style="font-size:28px;font-weight:600;">85</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">监控中</div>
+      <div style="font-size:28px;font-weight:600;color:var(--success);">71</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">暂停监控</div>
+      <div style="font-size:28px;font-weight:600;color:var(--danger);">14</div>
+    </div>
+  </div>
+
+  <!-- 目标列表 -->
+  <div class="filter-bar">
+    <input type="text" placeholder="搜索目标标识..." style="width:180px;">
+    <select><option>全部产品</option><option>通用</option><option>王者荣耀</option><option>和平精英</option><option>原神</option></select>
+    <select><option>全部状态</option><option>监控中</option><option>暂停监控</option></select>
+    <button class="btn btn-primary" onclick="showModal('channel-obj-add-modal')">+ 新增目标</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>目标标识</th><th>绑定产品</th><th>备注/说明</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>@waigua_123</td>
+          <td>王者荣耀</td>
+          <td>主要讨论王者外挂，活跃度高</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+        <tr>
+          <td>@waigua_pubg</td>
+          <td>和平精英</td>
+          <td>和平精英破解包分享</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+        <tr>
+          <td>@cheat_all</td>
+          <td>通用</td>
+          <td>通用黑产信息聚合</td>
+          <td><span class="tag tag-green">监控中</span></td>
+          <td><span class="action-link" onclick="showModal('channel-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已暂停','success')">暂停</span></td>
+        </tr>
+        <tr>
+          <td>@genshin_cheat</td>
+          <td>原神</td>
+          <td>原神外挂讨论，已不活跃</td>
+          <td><span class="tag tag-gray">暂停监控</span></td>
+          <td><span class="action-link" onclick="showModal('channel-obj-edit-modal')">编辑</span><span class="action-link" onclick="showToast('目标已启动','success')">启动</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="summary-bar" style="margin-top:16px;">
+    <span>共 <strong>85</strong> 条</span>
+    <span>监控中 <span style="color:#52c41a;">71</span></span>
+    <span>暂停监控 <span style="color:#d9d9d9;">14</span></span>
+  </div></div>`,
+    'channels': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">渠道管理</div>
+  <div class="filter-bar">
+    <input type="text" placeholder="搜索渠道..." style="width:180px;">
+    <select><option>全部类型</option><option>私域群聊</option><option>公域网站</option></select>
+    <select><option>全部状态</option><option>启用</option><option>停用</option></select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>渠道名称</th><th>类型</th><th>状态</th><th>备注/说明</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>TG</td>
+          <td><span class="tag tag-blue">私域群聊</span></td>
+          <td><span class="tag tag-green">启用</span></td>
+          <td>@waigua_123 / @pubghack_2025 / @cheat_all，主要讨论王者/和平外挂，活跃度高</td>
+          <td><span class="action-link" onclick="navigate('channel-detail')">详情</span><span class="action-link" onclick="showModal('channel-edit-modal')">编辑</span><span class="action-link" onclick="showToast('渠道已停用','success')">停用</span></td>
+        </tr>
+        <tr>
+          <td>QQ群</td>
+          <td><span class="tag tag-blue">私域群聊</span></td>
+          <td><span class="tag tag-gray">停用</span></td>
+          <td>87654321，原神外挂讨论群，已解散</td>
+          <td><span class="action-link" onclick="navigate('channel-detail')">详情</span><span class="action-link" onclick="showModal('channel-edit-modal')">编辑</span><span class="action-link" onclick="showToast('渠道已启用','success')">启用</span></td>
+        </tr>
+        <tr>
+          <td>闲鱼</td>
+          <td><span class="tag tag-green">公域网站</span></td>
+          <td><span class="tag tag-green">启用</span></td>
+          <td>店铺搜索关键词，售卖王者代练+外挂辅助</td>
+          <td><span class="action-link" onclick="navigate('channel-detail-web')">详情</span><span class="action-link" onclick="showModal('channel-edit-modal')">编辑</span><span class="action-link" onclick="showToast('渠道已停用','success')">停用</span></td>
+        </tr>
+        <tr>
+          <td>Bilibili</td>
+          <td><span class="tag tag-green">公域网站</span></td>
+          <td><span class="tag tag-green">启用</span></td>
+          <td>视频评论区，和平精英破解教程引流</td>
+          <td><span class="action-link" onclick="navigate('channel-detail-web')">详情</span><span class="action-link" onclick="showModal('channel-edit-modal')">编辑</span><span class="action-link" onclick="showToast('渠道已停用','success')">停用</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="summary-bar" style="margin-top:16px;">
+    <span>共 <strong>85</strong> 条</span>
+    <span>启用 <span style="color:#52c41a;">71</span></span>
+    <span>停用 <span style="color:#d9d9d9;">14</span></span>
+  </div></div>`,
+    'conversation-detail-content': `<div class="page active">对话详情页面内容已找到，长度: 60002 字符
+
+内容前200字符:
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>对话详情</title>
+<style>
+:root {
+  --primary: #1677FF;
+  --primary-hover: #4096FF;
+  --success: #52C41A;
+  --warning: #FAAD14;
+  --danger: #FF4D4F;
+  --text: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-muted: rgba(0, 0, 0, 0.45);
+  --border: #D9D9D9;
+  --border-split: #F0F0F0;
+  --bg: #F5F5F5;
+  --bg-container: #FFFFFF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+/* 上方统计栏 */
+.stats-bar {
+  background: var(--bg-container);
+  border-bottom: 1px solid var(--border-split);
+  padding: 16px 24px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.stats-bar span { font-size: 13px; }
+.stats-bar strong { color: var(--text); font-size: 16px; }
+
+/* 下方左右分栏 */
+.chat-container {
+  display: flex;
+  height: calc(100vh - 120px);
+  overflow: hidden;
+}
+
+/* 左侧会话筛选 */
+.session-panel {
+  width: 260px;
+  border-right: 1px solid var(--border-split);
+  background: var(--bg-container);
+  display: flex;
+  flex-direction: column;
+}
+.session-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-split);
+}
+.session-header .label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.session-header select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.session-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.session-card {
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.session-card.active {
+  border-color: var(--primary);
+}
+.session-card .time {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.session-card .preview {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.session-card .meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.session-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border-split);
+}
+.session-footer button {
+  width: 100%;
+  padding: 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.session-footer button:hover {
+  background: var(--primary-hover);
+}
+
+/* 右侧对话内容 */
+.chat-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: var(--bg);
+}
+
+/* 消息气泡 */
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.user-message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.user-bubble {
+  max-width: 70%;
+  background: var(--bg-container);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.user-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  text-align: right;
+}
+.agent-message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.agent-bubble {
+  max-width: 70%;
+  background: #f0f7ff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  border: 1px solid #d0e3ff;
+}
+.agent-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  padding-left: 42px;
+}
+.agent-meta .time {
+  margin-bottom: 2px;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: white;
+}
+.user-avatar {
+  background: var(--primary);
+}
+.agent-avatar {
+  background: var(--success);
+}
+</style>
+</head>
+<body>
+<!-- 上方统计栏 -->
+<div class="stats-bar">
+  <span>输入Token：<strong>1,250</strong></span>
+  <span>输出Token：<strong>8,420</strong></span>
+  <span>对话轮数：<strong>5</strong></span>
+  <span>消耗积分：<strong>156</strong></span>
+  <span>模型：<strong>DeepSeek-V3</strong></span>
+</div>
+
+<!-- 下方左右分栏 -->
+<div class="chat-container">
+  <!-- 左侧会话筛选 -->
+  <div class="session-panel">
+    <div class="session-header">
+      <div class="label">日期筛选</div>
+      <select>
+        <option>2026-06-16</option>
+        <option>2026-06-15</option>
+        <option>2026-06-14</option>
+      </select>
+    </div>
+    <div class="session-list">
+      <div class="label">会话列表</div>
+      <div class="session-card active">
+        <div class="time">10:30</div>
+        <div class="preview">帮我分析外挂情况...</div>
+        <div class="meta">5轮 · 1,250T</div>
+      </div>
+      <div class="session-card">
+        <div class="time">09:15</div>
+        <div class="preview">生成舆情报告...</div>
+        <div class="meta">3轮 · 800T</div>
+      </div>
+    </div>
+    <div class="session-footer">
+      <button>导出PDF</button>
+    </div>
+  </div>
+
+  <!-- 右侧对话内容 -->
+  <div class="chat-panel">
+    <div class="message-group">
+      <!-- 用户消息 -->
+      <div class="user-message">
+        <div class="user-bubble">
+          <div>帮我分析一下最近的外挂情况，主要关注王者荣耀这款游戏的最新动态。</div>
+          <div class="user-time">10:30:05</div>
+        </div>
+        <div class="avatar user-avatar">👤</div>
+      </div>
+
+      <!-- Agent消息 -->
+      <div class="agent-message">
+        <div class="avatar agent-avatar">🤖</div>
+        <div>
+          <div class="agent-bubble">
+            <div>根据近期数据分析，外挂讨论量较上周增长15%，主要集中在以下渠道：</div>
+            <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+              <div>• TG频道 @waigua_123：讨论量 +23%</div>
+              <div>• 闲鱼关键词「王者外挂」：新增商品 45 件</div>
+              <div>• B站相关视频：新增 12 个</div>
+            </div>
+            <div style="margin-top: 8px;">建议重点关注 TG 频道和闲鱼平台的最新动态。</div>
+          </div>
+          <div class="agent-meta">
+            <div class="time">10:30:08</div>
+            <div>输入: 15T | 输出: 580T | 积分: 25 | 模型: DeepSeek-V3 | 耗时: 2.3s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 用户消息 -->
+      <div class="user-message">
+        <div class="user-bubble">
+          <div>能帮我生成一份详细的舆情报告吗？需要包含具体的渠道分布和趋势分析。</div>
+          <div class="user-time">10:32:15</div>
+        </div>
+        <div class="avatar user-avatar">👤</div>
+      </div>
+
+      <!-- Agent消息 -->
+      <div class="agent-message">
+        <div class="avatar agent-avatar">🤖</div>
+        <div>
+          <div class="agent-bubble">
+            <div>已为您生成舆情报告，包含以下内容：</div>
+            <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+              <div>📊 渠道分布：TG 35% | 闲鱼 28% | B站 18% | QQ群 12% | 其他 7%</div>
+              <div>📈 趋势分析：近7天讨论量呈上升趋势，峰值出现在周末</div>
+              <div>🔍 关键词分析：「外挂」「破解」「代练」为高频词</div>
+              <div>⚠️ 风险预警：发现 3 个新型外挂工具，建议立即关注</div>
+            </div>
+            <div style="margin-top: 8px;">报告已保存至「摘要数据」模块，您可以随时查看。</div>
+          </div>
+          <div class="agent-meta">
+            <div class="time">10:32:18</div>
+            <div>输入: 20T | 输出: 620T | 积分: 64 | 模型: DeepSeek-V3 | 耗时: 3.1s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html></div>`,
+    'conversation-detail': `<div class="page active"><div class="back-link" onclick="navigate('product-detail')">← 返回产品详情</div>
+<div class="detail-title" style="margin-top:12px">对话详情 — AI舆情分析员</div>
+
+<div style="display: flex; height: calc(100vh - 180px); min-height: 500px; border: 1px solid var(--border-split); border-radius: var(--radius-md); overflow: hidden;">
+  <!-- 左侧：日期筛选 + 会话列表 -->
+  <div style="width: 260px; border-right: 1px solid var(--border-split); display: flex; flex-direction: column; background: var(--bg-container); flex-shrink: 0;">
+    <!-- 日期筛选 -->
+    <div style="padding: 16px; border-bottom: 1px solid var(--border-split);">
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">日期</div>
+      <select style="width: 100%; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; background: var(--bg-container);">
+        <option>2026-06-16</option>
+        <option>2026-06-15</option>
+        <option>2026-06-14</option>
+        <option>2026-06-13</option>
+      </select>
+    </div>
+    <!-- 会话列表 -->
+    <div style="flex: 1; overflow-y: auto; padding: 8px;">
+      <div style="font-size: 12px; color: var(--text-secondary); padding: 8px 8px 4px;">会话列表</div>
+      <!-- 会话项 1：当前选中 -->
+      <div style="padding: 10px 12px; border-radius: var(--radius-sm); background: var(--primary-light); border: 1px solid var(--primary); cursor: pointer; margin-bottom: 6px;">
+        <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">10:30 ~ 10:32</div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">3轮 · 25积分</div>
+      </div>
+      <!-- 会话项 2 -->
+      <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+        <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">14:15 ~ 14:20</div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">5轮 · 42积分</div>
+      </div>
+      <!-- 会话项 3 -->
+      <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+        <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">09:20 ~ 09:22</div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">2轮 · 18积分</div>
+      </div>
+      <!-- 会话项 4 -->
+      <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+        <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">16:45 ~ 16:48</div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">4轮 · 31积分</div>
+      </div>
+      <!-- 会话项 5 -->
+      <div style="padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+        <div style="font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px;">11:00 ~ 11:01</div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">1轮 · 8积分</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 右侧：上下结构 -->
+  <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+    <!-- 上半：会话统计 -->
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-split); background: var(--bg-container);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div style="font-size: 16px; font-weight: 600; color: var(--text);">会话 10:30 ~ 10:32</div>
+        <button style="padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; background: var(--bg-container); color: var(--text); cursor: pointer;">导出</button>
+      </div>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px;">
+        <div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">累计消耗 Token</div>
+          <div style="font-weight: 600; color: var(--text);">1,250</div>
+          <div style="font-size: 11px; color: var(--text-muted);">输入 850 · 输出 400</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">累计消耗积分</div>
+          <div style="font-weight: 600; color: var(--text);">25</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">对话轮数</div>
+          <div style="font-weight: 600; color: var(--text);">3</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 下半：消息气泡 -->
+    <div style="flex: 1; overflow-y: auto; padding: 20px; background: var(--bg);">
+      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px;">
+        
+        <!-- 用户消息 1 -->
+        <div style="display: flex; justify-content: flex-end;">
+          <div style="max-width: 80%;">
+            <div style="background: var(--bg-container); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+              帮我分析一下最近的外挂情况，主要关注王者荣耀这款游戏的最新动态。
+            </div>
+            <div style="text-align: right; font-size: 11px; color: var(--text-muted); margin-top: 4px;">10:30:00</div>
+          </div>
+        </div>
+        
+        <!-- Agent 消息 1 -->
+        <div style="display: flex; justify-content: flex-start;">
+          <div style="max-width: 80%;">
+            <div style="background: var(--bg-container); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+              <div style="font-weight: 500; color: var(--primary); margin-bottom: 6px;">AI舆情分析员</div>
+              <div>根据近期数据分析，外挂讨论量较上周增长15%，主要集中在以下渠道：</div>
+              <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+                <div>TG频道 @waigua_123：讨论量 +23%</div>
+                <div>闲鱼关键词「王者外挂」：新增商品 45 件</div>
+                <div>B站相关视频：新增 12 个</div>
+              </div>
+              <div style="margin-top: 8px;">建议重点关注 TG 频道和闲鱼平台的最新动态。</div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; align-items: center;">
+              <span>10:30:05</span>
+              <span style="color: var(--text-secondary);">Token 600（输入 320 · 输出 280）</span>
+              <span style="color: var(--text-secondary);">12 积分</span>
+              <span style="color: var(--text-secondary);">4.2s</span>
+              <span style="color: var(--text-secondary);">DeepSeek-V3</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 用户消息 2 -->
+        <div style="display: flex; justify-content: flex-end;">
+          <div style="max-width: 80%;">
+            <div style="background: var(--bg-container); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+              能帮我生成一份详细的舆情报告吗？需要包含具体的渠道分布和趋势分析。
+            </div>
+            <div style="text-align: right; font-size: 11px; color: var(--text-muted); margin-top: 4px;">10:31:20</div>
+          </div>
+        </div>
+        
+        <!-- Agent 消息 2 -->
+        <div style="display: flex; justify-content: flex-start;">
+          <div style="max-width: 80%;">
+            <div style="background: var(--bg-container); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text);">
+              <div style="font-weight: 500; color: var(--primary); margin-bottom: 6px;">AI舆情分析员</div>
+              <div>已为您生成舆情报告，包含以下内容：</div>
+              <div style="margin-top: 8px; padding-left: 12px; border-left: 2px solid var(--primary);">
+                <div>渠道分布：TG 35% | 闲鱼 28% | B站 18% | QQ群 12% | 其他 7%</div>
+                <div>趋势分析：近7天讨论量呈上升趋势，峰值出现在周末</div>
+                <div>关键词分析：「外挂」「破解」「代练」为高频词</div>
+                <div>风险预警：发现 3 个新型外挂工具，建议立即关注</div>
+              </div>
+              <div style="margin-top: 8px;">报告已保存至「摘要数据」模块，您可以随时查看。</div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; align-items: center;">
+              <span>10:32:18</span>
+              <span style="color: var(--text-secondary);">Token 650（输入 530 · 输出 120）</span>
+              <span style="color: var(--text-secondary);">13 积分</span>
+              <span style="color: var(--text-secondary);">56.8s</span>
+              <span style="color: var(--text-secondary);">DeepSeek-V3</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div></div>`,
+    'dashboard': `<div class="page active"><div class="page active" id="page-dashboard">
+<div class="detail-title" style="margin-bottom:20px;">概览</div>
+<div style="display:flex;gap:0;margin-bottom:20px;">
+<button class="tab active" data-oview="platform" onclick="switchOverviewView('platform')">平台概览</button>
+<button class="tab" data-oview="data" onclick="switchOverviewView('data')">数据概览</button>
+<button class="tab" data-oview="cost" onclick="switchOverviewView('cost')">成本概览</button>
+</div>
+
+
+<div id="oview-platform" class="tab-content active">
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">接入产品数</div><div class="stat-value">12</div><div class="stat-change up">↑3 较上月</div></div>
+<div class="stat-card"><div class="stat-label">已开通 Agent</div><div class="stat-value">36/72</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">50% 启用率</div></div>
+<div class="stat-card"><div class="stat-label">活跃渠道</div><div class="stat-value">96</div><div class="stat-change up">↑5 较昨日</div></div>
+<div class="stat-card"><div class="stat-label">活跃模型</div><div class="stat-value">DeepSeek-V3</div></div>
+</div>
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">产品接入趋势（近30天）</div><div class="chart-placeholder">折线图 — 产品数增长趋势</div></div>
+<div class="chart-card"><div class="chart-title">Agent 开通分布</div><div class="chart-placeholder">环形图 — 各产品Agent开通率</div></div>
+</div>
+</div>
+
+
+<div id="oview-data" class="tab-content">
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">渠道总数</div><div class="stat-value">128</div><div class="stat-change up">↑12 本月新增</div></div>
+<div class="stat-card"><div class="stat-label">活跃渠道</div><div class="stat-value">96</div><div class="stat-change up">↑5 较昨日</div></div>
+<div class="stat-card"><div class="stat-label">今日原始消息</div><div class="stat-value">45.2K</div><div class="stat-change down">↓8% 较昨日</div></div>
+<div class="stat-card"><div class="stat-label">今日摘要数</div><div class="stat-value">1,280</div><div class="stat-change up">↑15% 较昨日</div></div>
+</div>
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">近7天消息量趋势</div><div class="chart-placeholder">折线图 — 原始消息 + 摘要数量</div></div>
+<div class="chart-card"><div class="chart-title">渠道质量排名 TOP5</div><div class="chart-placeholder">横向柱状图 — 按有效情报占比排序</div></div>
+</div>
+</div>
+
+
+<div id="oview-cost" class="tab-content">
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">今日 Token 消耗</div><div class="stat-value">1,245,800</div><div class="stat-change down">↓12% 较昨日</div></div>
+<div class="stat-card"><div class="stat-label">今日积分消耗</div><div class="stat-value">1,245</div><div class="stat-change down">↓12% 较昨日</div></div>
+<div class="stat-card"><div class="stat-label">本月积分消耗</div><div class="stat-value">12,450</div><div class="stat-change up">↑18% 环比</div></div>
+<div class="stat-card"><div class="stat-label">全平台总余额</div><div class="stat-value">58,320</div></div>
+</div>
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">Token 消耗趋势（近7天）</div><div class="chart-placeholder">折线图 — 按模型分色</div></div>
+<div class="chart-card"><div class="chart-title">积分消耗趋势（近7天）</div><div class="chart-placeholder">折线图 — 按产品分色</div></div>
+</div>
+</div>
+
+
+<div class="alert-list">
+<div class="alert-header">
+最近告警 / 异常事件 <span onclick="navigate('billing')" style="cursor:pointer">查看全部 →</span>
+</div>
+<div class="alert-item">
+<span class="alert-icon">⚠️</span>
+<span class="alert-time">06-05 16:30</span>
+<span class="alert-msg">王者荣耀 Token 用量超预算 120%</span>
+<span class="alert-action" onclick="navigate('billing')" style="cursor:pointer">详情 →</span>
+</div>
+<div class="alert-item">
+<span class="alert-icon">🔴</span>
+<span class="alert-time">06-08 09:00</span>
+<span class="alert-msg">球球大作战 积分余额仅剩 350，低于告警线 1,000</span>
+<span class="alert-action" onclick="navigate('billing')" style="cursor:pointer">充值 →</span>
+</div>
+<div class="alert-item">
+<span class="alert-icon">⚠️</span>
+<span class="alert-time">06-05 14:15</span>
+<span class="alert-msg">球球大作战 策略Agent 连续失败 3 次</span>
+<span class="alert-action" onclick="navigate('billing')" style="cursor:pointer">详情 →</span>
+</div>
+<div class="alert-item">
+<span class="alert-icon">🔴</span>
+<span class="alert-time">06-07 22:30</span>
+<span class="alert-msg">迷你枪战精英 今日积分消耗已达上限（800/800），已暂停服务</span>
+<span class="alert-action" onclick="navigate('billing')" style="cursor:pointer">调整上限 →</span>
+</div>
+</div>
+</div></div>`,
+    'models': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">模型管理 — 平台级全局配置</div>
+<div style="font-size:12px;color:var(--warning);background:#fffbe6;border:1px solid #ffe58f;border-radius:6px;padding:8px 14px;margin-bottom:16px;">
+模型为平台级全局配置。任何时候仅一个活跃模型，所有产品、所有 Agent 统一使用。切换时全平台即时生效。
+</div>
+<div style="display:flex;gap:16px;margin-bottom:20px;">
+<div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">当前活跃模型</div>
+<div style="font-size:28px;font-weight:600;color:var(--primary);">DeepSeek-V3</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">最后切换：06-05 14:30 · 操作人：馆长</div>
+</div>
+<div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">全平台 Token/日</div>
+<div style="font-size:28px;font-weight:600;">415,000</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">本月累计：12,450,000</div>
+</div>
+</div>
+
+
+<div style="background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;margin-bottom:24px;box-shadow:var(--shadow-1);">
+<div style="font-weight:500;font-size:14px;margin-bottom:12px;">选择模型（平台级，切换后全平台即时生效）</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th style="width:40px;"></th><th>模型名称</th><th>积分汇率</th><th>状态</th><th>今日Token</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td><input type="radio" name="gmodel" checked></td><td>DeepSeek-V3 <span class="tag tag-blue">当前</span></td><td>1,000T=1积分</td><td><span class="tag tag-green">启用</span></td><td>7.7M</td><td><button class="btn btn-sm" onclick="showModal('model-edit-modal')">编辑</button></td></tr>
+<tr><td><input type="radio" name="gmodel"></td><td>DeepSeek-R1</td><td>1,000T=4积分</td><td><span class="tag tag-green">启用</span></td><td>1.7M</td><td><button class="btn btn-sm" onclick="showModal('model-edit-modal')">编辑</button><button class="btn btn-sm btn-danger" onclick="showToast('模型已停用','success')">停用</button></td></tr>
+<tr><td><input type="radio" name="gmodel"></td><td>GPT-4 Turbo</td><td>1,000T=30积分</td><td><span class="tag tag-green">启用</span></td><td>3.0M</td><td><button class="btn btn-sm" onclick="showModal('model-edit-modal')">编辑</button><button class="btn btn-sm btn-danger" onclick="showToast('模型已停用','success')">停用</button></td></tr>
+</tbody>
+</table>
+</div>
+<div style="display:flex;gap:8px;margin-top:16px;">
+<button class="btn btn-primary btn-sm" onclick="showModal('model-add-modal')">+ 添加模型</button>
+<button class="btn btn-danger btn-sm" onclick="showModal('model-switch-confirm-modal')">切换模型</button>
+</div>
+</div>
+
+
+<div style="font-weight:500;font-size:14px;margin-bottom:8px;">模型切换记录</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>时间</th><th>切换前</th><th>切换后</th><th>操作人</th></tr></thead>
+<tbody>
+<tr><td>06-05 14:30</td><td>GPT-4T</td><td>DeepSeek-V3</td><td>馆长</td></tr>
+<tr><td>05-28 09:15</td><td>DeepSeek-V3</td><td>GPT-4T</td><td>馆长</td></tr>
+</tbody>
+</table>
+</div></div>`,
+    'product-detail': `<div class="page active"><div class="back-link" onclick="navigate('products')">← 返回产品列表</div>
+<div class="detail-title" style="margin-top:12px">王者荣耀 · 产品详情</div>
+<div class="summary-bar">
+<span>本月Token：<strong>3,200,000</strong></span>
+<span>可用积分：<strong>25,000</strong></span>
+<span>接入时间：<strong>2026-03-15</strong></span>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab(this, 'ptab-agents')">Agent能力配置</button>
+<button class="tab" onclick="switchTab(this, 'ptab-token')">Token用量</button>
+<button class="tab" onclick="switchTab(this, 'ptab-billing')">计费明细</button>
+<button class="tab" onclick="switchTab(this, 'ptab-alerts')">预警配置</button>
+<button class="tab" onclick="switchTab(this, 'ptab-log')">操作日志</button>
+</div>
+
+
+<div class="tab-content active" id="ptab-agents">
+<div class="summary-bar"><span>已开通 <strong>5/6</strong> 个 Agent</span><span>累计 Token：<strong>32,450,000</strong></span></div>
+<div class="agent-cards">
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI舆情分析员</div>
+</div>
+<div class="agent-card-desc">全网舆情感知与监控</div>
+<div class="agent-card-stats"><span>本月Token: 1,120K</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-green">已开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+</div>
+</div>
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI技术分析员</div>
+</div>
+<div class="agent-card-desc">破解包逆向分析</div>
+<div class="agent-card-stats"><span>本月Token: 896K</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-green">已开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+</div>
+</div>
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI策略运营员</div>
+</div>
+<div class="agent-card-desc">策略配置+灰度发布</div>
+<div class="agent-card-stats"><span>本月Token: 576K</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-green">已开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+</div>
+</div>
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI处置管理员</div>
+</div>
+<div class="agent-card-desc">账号标记与分级处置</div>
+<div class="agent-card-stats"><span>本月Token: 320K</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-green">已开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+</div>
+</div>
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI申诉管理员</div>
+</div>
+<div class="agent-card-desc">智能申诉处理</div>
+<div class="agent-card-stats"><span>本月Token: 160K</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-green">已开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+</div>
+</div>
+<div class="agent-card">
+<div class="agent-card-header">
+<div class="agent-card-icon"></div>
+<div class="agent-card-name">AI数据分析员</div>
+</div>
+<div class="agent-card-desc">NL2SQL数据洞察</div>
+<div class="agent-card-stats"><span>本月Token: 0</span></div>
+<div class="agent-card-actions">
+<span class="tag tag-gray">未开通</span>
+<a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;" onclick="navigate('conversation-detail');return false;">对话记录</a>
+<label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="tab-content" id="ptab-token">
+<div class="chart-row">
+<div class="chart-card">
+<div class="chart-title"> Token 消耗趋势</div>
+<div class="chart-placeholder">折线图 — 按Agent分色显示每日Token消耗</div>
+</div>
+<div class="chart-card">
+<div class="chart-title"> Agent 用量分布</div>
+<div class="chart-placeholder">环形图 — 舆情35% 技术28% 策略18% 处置10% 申诉5% 数据4%</div>
+</div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Agent</th><th>Token数</th><th>调用次数</th><th>占比</th><th>趋势</th></tr></thead>
+<tbody>
+<tr><td> AI舆情分析员</td><td>1,120,000</td><td>2,340</td><td>35.0%</td><td><span class="stat-change up">↑12%</span></td></tr>
+<tr><td> AI技术分析员</td><td>896,000</td><td>458</td><td>28.0%</td><td><span class="stat-change down">↓3%</span></td></tr>
+<tr><td>️ AI策略运营员</td><td>576,000</td><td>1,120</td><td>18.0%</td><td><span class="stat-change up">↑8%</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="tab-content" id="ptab-billing">
+<div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+<div class="stat-card"><div class="stat-label">当前积分余额</div><div class="stat-value">25,000</div></div>
+<div class="stat-card"><div class="stat-label">日均积分消耗</div><div class="stat-value">1,450</div></div>
+<div class="stat-card"><div class="stat-label">本月累计消耗</div><div class="stat-value">4,350</div><div class="stat-change up">↑12% 环比</div></div>
+<div class="stat-card"><div class="stat-label">预估可用</div><div class="stat-value">17 天</div></div>
+</div>
+
+
+<div style="background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+<div style="font-weight:500;font-size:14px;margin-bottom:12px;">️ 费用控制设置</div>
+<div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;">
+<div class="form-group" style="margin-bottom:0;">
+<div class="form-label">每日积分上限</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<input type="number" value="2000" style="width:100px;padding:6px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;">
+<span style="font-size:12px;color:var(--text-muted);">积分/天</span>
+</div>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<div class="form-label">余额告警线</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<input type="number" value="5000" style="width:100px;padding:6px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;">
+<span style="font-size:12px;color:var(--text-muted);">积分</span>
+</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">低于该值时触发告警通知</div>
+</div>
+<button class="btn btn-primary" onclick="showToast('费用控制设置已保存','success')">保存设置</button>
+</div>
+<div style="margin-top:12px;font-size:13px;">当前状态：<span class="tag tag-green">正常</span> ｜ 每日上限未触发 ｜ 余额充足</div>
+</div>
+
+<div style="margin-bottom:16px;display:flex;gap:8px;">
+<button class="btn btn-primary" onclick="showModal('recharge-modal')">+ 充值积分</button>
+<button class="btn" onclick="showToast('账单导出中…','success')"> 导出账单</button>
+</div>
+
+<div class="table-wrap">
+<div class="table-top"><span>积分流水</span></div>
+<table>
+<thead><tr><th>时间</th><th>类型</th><th>积分</th><th>余额</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td>06-08 11:30</td><td><span class="tag tag-red">消耗</span></td><td>-145</td><td>25,000</td><td>AI舆情分析员调用 (145K Token)</td></tr>
+<tr><td>06-08 10:15</td><td><span class="tag tag-red">消耗</span></td><td>-89</td><td>25,145</td><td>AI技术分析员调用 (89K Token)</td></tr>
+<tr><td>06-07 18:30</td><td><span class="tag tag-red">消耗</span></td><td>-52</td><td>25,234</td><td>AI策略运营员调用 (52K Token)</td></tr>
+<tr><td>06-06 18:00</td><td><span class="tag tag-green">充值</span></td><td>+5,000</td><td>25,286</td><td>管理员充值</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="tab-content" id="ptab-alerts">
+<div style="background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+<div style="font-weight:500;font-size:14px;margin-bottom:12px;">️ 积分余额告警配置</div>
+<div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;">
+<div class="form-group" style="margin-bottom:0;">
+<div class="form-label">余额告警阈值</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<input type="number" value="5000" style="width:100px;padding:6px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;">
+<span style="font-size:12px;color:var(--text-muted);">积分</span>
+</div>
+<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">低于该值时触发告警通知</div>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<div class="form-label">通知渠道</div>
+<div style="display:flex;gap:12px;">
+<label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox" checked> 企微</label>
+<label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox"> 邮件</label>
+<label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox"> 短信</label>
+</div>
+</div>
+<button class="btn btn-primary" onclick="showToast('告警配置已保存','success')">保存配置</button>
+</div>
+</div>
+<div class="table-wrap">
+<div class="table-top"><span>告警历史</span></div>
+<table>
+<thead><tr><th>时间</th><th>告警类型</th><th>触发值</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>06-08 09:00</td><td>余额不足</td><td>350 / 5000</td><td><span class="tag tag-red"> 未处理</span></td></tr>
+<tr><td>06-05 16:30</td><td>Token超限</td><td>120% / 100%</td><td><span class="tag tag-green">已处理</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="tab-content" id="ptab-log">
+<div class="table-wrap">
+<table>
+<thead><tr><th>时间</th><th>操作类型</th><th>详情</th><th>操作人</th></tr></thead>
+<tbody>
+<tr><td>06-05 14:30</td><td><span class="tag tag-blue">模型切换</span></td><td>GPT-4T → DeepSeek-V3</td><td>馆长</td></tr>
+<tr><td>06-03 10:15</td><td><span class="tag tag-gray">Agent停用</span></td><td>停用AI数据分析员</td><td>馆长</td></tr>
+<tr><td>06-01 09:00</td><td><span class="tag tag-green">Agent开通</span></td><td>开通AI申诉管理员</td><td>馆长</td></tr>
+</tbody>
+</table>
+</div>
+</div></div>`,
+    'products': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">产品管理</div>
+<div class="filter-bar">
+<input type="text" placeholder="搜索产品名称...">
+<select><option>Agent能力筛选</option><option>已开通舆情Agent</option><option>已开通技术Agent</option></select>
+<select onchange="renderProductList()"><option>全部状态</option><option>正常</option><option>告警</option><option>异常</option><option>未开通</option></select>
+</div>
+<div class="summary-bar">
+<span>总产品数：<strong>12</strong></span>
+<span>平均开通率：<strong>50%</strong></span>
+<span>本月总积分消耗：<strong>12,450</strong></span>
+<span>全平台总余额：<strong>58,320</strong></span>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>产品名称</th><th>开通Agent数</th><th>本月积分消耗</th><th>积分余额</th><th>状态</th><th>操作</th></tr>
+</thead>
+<tbody id="productTableBody">
+<tr>
+<td><span class="action-link" onclick="navigate('product-detail')">王者荣耀</span></td>
+<td><span title="AI舆情分析员 | AI技术分析员 | AI策略运营员 | AI处置管理员 | AI申诉管理员 | AI数据分析员" style="cursor:help;">6/6</span></td>
+<td>3,200</td>
+<td>25,000</td>
+<td><span class="tag tag-green">正常</span></td>
+<td><button class="btn btn-sm" onclick="navigate('product-detail')">详情</button></td>
+</tr>
+<tr>
+<td><span class="action-link" onclick="navigate('product-detail')">和平精英</span></td>
+<td><span title="AI舆情分析员 | AI技术分析员 | AI策略运营员 | AI处置管理员 | AI申诉管理员 | AI数据分析员" style="cursor:help;">4/6</span></td>
+<td>1,800</td>
+<td>8,500</td>
+<td><span class="tag tag-green">正常</span></td>
+<td><button class="btn btn-sm" onclick="navigate('product-detail')">详情</button></td>
+</tr>
+<tr>
+<td><span class="action-link" onclick="navigate('product-detail')">迷你枪战精英</span></td>
+<td><span title="AI舆情分析员 | AI技术分析员 | AI策略运营员 | AI处置管理员 | AI申诉管理员 | AI数据分析员" style="cursor:help;">3/6</span></td>
+<td>950</td>
+<td style="color:var(--danger);font-weight:600;">2,100</td>
+<td><span class="tag tag-yellow">告警</span></td>
+<td><button class="btn btn-sm" onclick="navigate('product-detail')">详情</button></td>
+</tr>
+<tr>
+<td><span class="action-link" onclick="navigate('product-detail')">球球大作战</span></td>
+<td><span title="AI舆情分析员 | AI技术分析员 | AI策略运营员 | AI处置管理员 | AI申诉管理员 | AI数据分析员" style="cursor:help;">2/6</span></td>
+<td>420</td>
+<td style="color:var(--danger);font-weight:600;">350</td>
+<td><span class="tag tag-red">异常</span></td>
+<td><button class="btn btn-sm" onclick="navigate('product-detail')">详情</button></td>
+</tr>
+</tbody>
+</table>
+</div></div>`,
+    'summary-data': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;"> 摘要数据</div>
+  <div class="filter-bar">
+    <select><option>全部产品</option><option>王者荣耀</option><option>和平精英</option></select>
+    <select><option>全部渠道</option><option>TG频道</option><option>TG群</option></select>
+    <input type="date" value="2026-06-01"><span style="color:#999;">~</span><input type="date" value="2026-06-09">
+    <button class="btn btn-primary">查询</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>日期</th><th>渠道</th><th>渠道类型</th><th>产品</th><th>消息总数</th><th>相关数</th><th>操作</th></tr></thead>
+      <tbody>
+        <!-- 私域群聊 — TG -->
+        <tr>
+          <td>06-09</td>
+          <td>TG · @waigua_123</td>
+          <td>私域群聊</td>
+          <td>王者荣耀</td>
+          <td>1,240</td>
+          <td>890</td>
+          <td><span class="action-link" onclick="showSummaryDrawer('summary-drawer-private-1')">详情</span></td>
+        </tr>
+        <!-- 私域群聊 — TG -->
+        <tr>
+          <td>06-09</td>
+          <td>TG · @pubghack_2025</td>
+          <td>私域群聊</td>
+          <td>和平精英</td>
+          <td>856</td>
+          <td>620</td>
+          <td><span class="action-link" onclick="showSummaryDrawer('summary-drawer-private-2')">详情</span></td>
+        </tr>
+        <!-- 公域网站 — 闲鱼 -->
+        <tr>
+          <td>06-09</td>
+          <td>闲鱼 · 王者荣耀外挂</td>
+          <td>公域网站</td>
+          <td>王者荣耀</td>
+          <td>124</td>
+          <td>89</td>
+          <td><span class="action-link" onclick="showSummaryDrawer('summary-drawer-public-1')">详情</span></td>
+        </tr>
+        <!-- 公域网站 — 百度贴吧 -->
+        <tr>
+          <td>06-09</td>
+          <td>百度贴吧 · 和平精英辅助</td>
+          <td>公域网站</td>
+          <td>和平精英</td>
+          <td>86</td>
+          <td>62</td>
+          <td><span class="action-link" onclick="showSummaryDrawer('summary-drawer-public-2')">详情</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 私域群聊 Drawer 1 -->
+  <div class="summary-drawer-overlay" id="summary-drawer-private-1">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 王者荣耀 TG · @waigua_123 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('summary-drawer-private-1')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">消息总数</span><span>1,240</span>
+          <span style="color:var(--text-muted);">相关消息</span><span>890 (71.8%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 5% |  中性: 15% |  负面: 80%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-orange">账号交易</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">话题摘要</div>
+        <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;margin-bottom:16px;">
+          <div style="margin-bottom:8px;"><strong>1. 外挂销售集中讨论</strong> (声量: 620, 负面: 92%)</div>
+          <div style="margin-bottom:8px;"><strong>2. 账号交易信息</strong> (声量: 180, 负面: 85%)</div>
+          <div><strong>3. 辅助工具推广</strong> (声量: 90, 负面: 78%)</div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号，建议重点关注。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 私域群聊 Drawer 2 -->
+  <div class="summary-drawer-overlay" id="summary-drawer-private-2">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 和平精英 TG · @pubghack_2025 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('summary-drawer-private-2')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">消息总数</span><span>856</span>
+          <span style="color:var(--text-muted);">相关消息</span><span>620 (72.4%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 8% |  中性: 20% |  负面: 72%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">话题摘要</div>
+        <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;margin-bottom:16px;">
+          <div style="margin-bottom:8px;"><strong>1. 破解包分享</strong> (声量: 420, 负面: 88%)</div>
+          <div style="margin-bottom:8px;"><strong>2. 防封技术讨论</strong> (声量: 150, 负面: 65%)</div>
+          <div><strong>3. 代练服务</strong> (声量: 50, 负面: 55%)</div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 发现多个破解包下载链接，涉及最新版本全防+无限子弹。建议技术团队逆向分析提取特征。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 公域网站 Drawer 1 — 闲鱼 -->
+  <div class="summary-drawer-overlay" id="summary-drawer-public-1">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 王者荣耀 闲鱼 · 王者荣耀外挂 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('summary-drawer-public-1')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">记录总数</span><span>124</span>
+          <span style="color:var(--text-muted);">相关记录</span><span>89 (71.8%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 2% |  中性: 8% |  负面: 90%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">相关记录</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>无限金币售卖</strong><a href="http://123.com/38881.html" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@fuyun444</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 14:32</div>
+            <div>无限金币售卖，下载地址：http://123.com/38881.html</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>王者全英雄透视自瞄</strong><a href="https://xianyu.com/item-772881" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@gamehack99</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 11:15</div>
+            <div>稳定大号，包更新，支持安卓/iOS/模拟器。价格 88-288。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>新赛季上分神器</strong><a href="https://xianyu.com/item-995511" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@esport_wholesale</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 09:50</div>
+            <div>免Root 免越狱，一键开启。支持三端，大号实测无异常。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>专业代练+辅助工具</strong><a href="https://xianyu.com/item-336622" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@boosting_studio</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 08:20</div>
+            <div>王者到荣耀一天搞定。工具单卖 128/月，代练另议。</div>
+            <div style="margin-top:6px;"><span class="tag tag-orange">代练</span><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>GM后台权限售卖</strong><a href="https://xianyu.com/item-110033" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@gm_seller_001</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 07:05</div>
+            <div>内部GM工具，可修改金币/钻石/装备。演示视频私聊获取。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span><span class="tag tag-blue">GM后台</span></div>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 闲鱼平台今日王者荣耀外挂商品激增 38%，涉及透视、自瞄、GM后台等多类违规商品。发现 5 个活跃卖家账号，建议同步风控团队监控下架。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 公域网站 Drawer 2 — 百度贴吧 -->
+  <div class="summary-drawer-overlay" id="summary-drawer-public-2">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 和平精英 百度贴吧 · 和平精英辅助 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('summary-drawer-public-2')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">记录总数</span><span>86</span>
+          <span style="color:var(--text-muted);">相关记录</span><span>62 (72.1%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 5% |  中性: 15% |  负面: 80%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">相关记录</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>PUBG 国际服全防辅助</strong><a href="https://tieba.baidu.com/p/99887766" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@pubg_hack_global</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 16:45</div>
+            <div>稳定防封，24h 在线客服。支持全机型，免Root/免越狱。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>和平精英破解版下载</strong><a href="https://pan.baidu.com/s/1abc123" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@crack_master</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 13:20</div>
+            <div>最新版本无限子弹+全防+飞天。APK 直装，无需 Root。</div>
+            <div style="margin-top:6px;"><span class="tag tag-blue">破解版</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>吃鸡神器月卡 68</strong><a href="https://tieba.baidu.com/p/55443311" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@chicken_tool</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 10:00</div>
+            <div>无后座+自瞄+透视，支持全机型。月卡 68，季卡 168。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>代练工作室招代理</strong><a href="https://tieba.baidu.com/p/22334455" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@boost_agent</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 08:30</div>
+            <div>皇冠到王牌一天完成，提供辅助工具。招下级代理，分成 30%。</div>
+            <div style="margin-top:6px;"><span class="tag tag-orange">代练</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>防封技术交流帖</strong><a href="https://tieba.baidu.com/p/66778899" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@anti_ban_tech</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 06:15</div>
+            <div>分享最新过检测方案，虚拟框架+模块隐藏。实测三天未封。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 百度贴吧和平精英辅助讨论帖活跃，涉及破解版分发、防封技术交流。发现 2 个疑似组织化代练团队，建议关注代理招募模式。
+        </div>
+      </div>
+    </div>
+  </div></div>`,
+    'task-crawl-detail': `<div class="page active"><div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <span class="action-link" onclick="navigate('transform-tasks')" style="font-size:14px;">← 返回转化任务</span>
+  </div>
+  <div class="detail-title" style="margin-bottom:20px;"> 爬取任务详情 — 06-11</div>
+
+  <!-- 任务概览 Bar -->
+  <div style="display:flex;gap:16px;margin-bottom:24px;">
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">目标渠道数</div>
+      <div style="font-size:28px;font-weight:600;">85</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">成功</div>
+      <div style="font-size:28px;font-weight:600;color:var(--success);">83</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">失败</div>
+      <div style="font-size:28px;font-weight:600;color:var(--danger);">2</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">耗时</div>
+      <div style="font-size:28px;font-weight:600;">45min</div>
+    </div>
+  </div>
+
+  <!-- 失败渠道告警 -->
+  <div style="background:#fff2f0;border:1px solid #ffccc7;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:20px;">️</span>
+      <div>
+        <div style="font-weight:500;font-size:14px;color:#cf1322;">2 个渠道爬取失败</div>
+        <div style="font-size:12px;color:#ff4d4f;margin-top:4px;">建议检查失败原因后重试</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 各渠道爬取结果 -->
+  <div class="detail-title" style="margin-bottom:16px;font-size:16px;"> 各渠道爬取结果</div>
+  <div class="filter-bar">
+    <input type="text" placeholder="搜索渠道..." style="width:180px;">
+    <select><option>全部状态</option><option>成功</option><option>失败</option><option>执行中</option><option>跳过</option></select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>渠道</th><th>目标标识/关键词</th><th>执行时间</th><th>执行耗时</th><th>消息数</th><th>命中关键词</th><th>状态</th><th>错误信息</th><th>操作</th></tr></thead>
+      <tbody>
+        <!-- 私域群聊 - TG频道 -->
+        <tr>
+          <td>TG <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>@waigua_123</td>
+          <td>02:00:15</td>
+          <td>32s</td>
+          <td>1,240</td>
+          <td>--</td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td>-</td>
+          <td><span class="action-link" onclick="showDrawer('drawer-private-1')">查看</span></td>
+        </tr>
+        <!-- 私域群聊 - TG群 -->
+        <tr>
+          <td>TG <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>@pubghack_2025</td>
+          <td>02:01:05</td>
+          <td>28s</td>
+          <td>890</td>
+          <td>--</td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td>-</td>
+          <td><span class="action-link" onclick="showDrawer('drawer-private-2')">查看</span></td>
+        </tr>
+        <!-- 私域群聊 - TG频道 -->
+        <tr>
+          <td>TG <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>@cheat_all</td>
+          <td>02:01:40</td>
+          <td>45s</td>
+          <td>2,100</td>
+          <td>--</td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td>-</td>
+          <td><span class="action-link" onclick="showDrawer('drawer-private-3')">查看</span></td>
+        </tr>
+        <!-- 私域群聊 - 执行中 -->
+        <tr>
+          <td>TG <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>@new_channel_001</td>
+          <td>02:30:00</td>
+          <td>-</td>
+          <td>-</td>
+          <td>--</td>
+          <td><span class="tag tag-blue"> 执行中</span></td>
+          <td>-</td>
+          <td><span class="action-link" style="color:var(--text-muted);">-</span></td>
+        </tr>
+        <!-- 私域群聊 - QQ群失败 -->
+        <tr style="background:#fff2f0;">
+          <td>QQ <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>87654321</td>
+          <td>02:02:30</td>
+          <td>5s</td>
+          <td>0</td>
+          <td>--</td>
+          <td><span class="tag tag-red"> 失败</span></td>
+          <td style="color:#ff4d4f;">群已解散</td>
+          <td><span class="action-link" style="color:#ff4d4f;" onclick="showToast('已触发重试 QQ群-87654321','success')"> 重试</span></td>
+        </tr>
+        <!-- 私域群聊 - TG频道失败 -->
+        <tr style="background:#fff2f0;">
+          <td>TG <span style="color:var(--text-muted);font-size:11px;">· 私域群聊</span></td>
+          <td>@genshin_hack</td>
+          <td>02:03:00</td>
+          <td>15s</td>
+          <td>0</td>
+          <td>--</td>
+          <td><span class="tag tag-red"> 失败</span></td>
+          <td style="color:#ff4d4f;">频道被封禁</td>
+          <td><span class="action-link" style="color:#ff4d4f;" onclick="showToast('已触发重试 @genshin_hack','success')"> 重试</span></td>
+        </tr>
+        <!-- 公域网站 - 闲鱼 -->
+        <tr>
+          <td>闲鱼 <span style="color:var(--text-muted);font-size:11px;">· 公域网站</span></td>
+          <td>王者荣耀外挂</td>
+          <td>02:05:10</td>
+          <td>12s</td>
+          <td>15</td>
+          <td><span class="keyword-tag">外挂</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td>-</td>
+          <td><span class="action-link" onclick="showDrawer('drawer-public-1')">查看</span></td>
+        </tr>
+        <!-- 公域网站 - 闲鱼 -->
+        <tr>
+          <td>闲鱼 <span style="color:var(--text-muted);font-size:11px;">· 公域网站</span></td>
+          <td>和平精英辅助</td>
+          <td>02:06:20</td>
+          <td>10s</td>
+          <td>8</td>
+          <td><span class="keyword-tag">辅助</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td>-</td>
+          <td><span class="action-link" onclick="showDrawer('drawer-public-2')">查看</span></td>
+        </tr>
+        <!-- 公域网站 - 跳过 -->
+        <tr>
+          <td>QQ <span style="color:var(--text-muted);font-size:11px;">· 公域网站</span></td>
+          <td>原神私服</td>
+          <td>-</td>
+          <td>-</td>
+          <td>0</td>
+          <td>--</td>
+          <td><span class="tag tag-gray"> 跳过</span></td>
+          <td style="color:var(--text-muted);">渠道状态为停用</td>
+          <td><span class="action-link" style="color:var(--text-muted);">-</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 任务执行日志 -->
+  <div class="detail-title" style="margin-bottom:16px;font-size:16px;margin-top:24px;"> 任务执行日志</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>时间</th><th>阶段</th><th>说明</th><th>耗时</th></tr></thead>
+      <tbody>
+        <tr><td>02:00:00</td><td>任务启动</td><td>开始执行爬取任务，目标渠道 85 个</td><td>-</td></tr>
+        <tr><td>02:00:10</td><td>渠道检测</td><td>检测渠道可用性，3 个渠道不可用（1 个已停用，2 个连接失败）</td><td>10s</td></tr>
+        <tr><td>02:05:00</td><td>批量爬取</td><td>完成 50/82 可用渠道爬取，累计消息 8,500 条</td><td>4min 50s</td></tr>
+        <tr><td>02:15:00</td><td>批量爬取</td><td>完成 79/82 可用渠道爬取，累计消息 12,430 条</td><td>10min</td></tr>
+        <tr><td>02:20:00</td><td>失败处理</td><td>2 个渠道爬取失败（群已解散、频道被封禁）</td><td>5min</td></tr>
+        <tr><td>02:25:00</td><td>结果汇总</td><td>生成爬取报告，成功 83 个，失败 2 个，跳过 1 个，执行中 1 个</td><td>5min</td></tr>
+        <tr><td>02:45:00</td><td>任务完成</td><td>爬取任务执行完毕，共获取 12,430 条消息</td><td>20min</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ========== 私域群聊抽屉 - TG频道 @waigua_123 ========== -->
+  <div class="drawer-overlay" id="drawer-private-1">
+    <div class="drawer">
+      <div class="drawer-header">
+        <span>爬取详情 — @waigua_123</span>
+        <button class="drawer-close" onclick="hideDrawer('drawer-private-1')">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <div class="drawer-section-title">渠道信息</div>
+          <div class="drawer-info-grid">
+            <span class="label">目标标识</span><span>@waigua_123</span>
+            <span class="label">绑定产品</span><span>王者荣耀</span>
+            <span class="label">执行时间</span><span>02:00:15</span>
+            <span class="label">消息数</span><span>1,240 条</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">关键词提取</div>
+          <div class="keyword-tags">
+            <span class="keyword-tag">外挂</span>
+            <span class="keyword-tag">透视</span>
+            <span class="keyword-tag">自瞄</span>
+            <span class="keyword-tag">代练</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">聊天记录</div>
+          <div class="chat-list">
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">U1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">user_abc <span class="chat-msg-time">2026-06-11 01:58</span></div>
+                <div class="chat-msg-text">王者新赛季透视+自瞄稳定大号，需要的私聊。价格优惠，包更新售后。</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">U2</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">seller_x <span class="chat-msg-time">2026-06-11 01:59</span></div>
+                <div class="chat-msg-text">@user_abc 怎么联系？有试用吗？</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">U1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">user_abc <span class="chat-msg-time">2026-06-11 02:00</span></div>
+                <div class="chat-msg-text">加 TG @support001，先试后付，支持安卓/iOS/模拟器。</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">U3</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">buyer_y <span class="chat-msg-time">2026-06-11 02:01</span></div>
+                <div class="chat-msg-text">上次买的被封了，这次稳吗？</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">U1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">user_abc <span class="chat-msg-time">2026-06-11 02:02</span></div>
+                <div class="chat-msg-text">新版过检测，大号实测一周无异常。不放心可以先小号测试。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 私域群聊抽屉 - TG群 @pubghack_2025 ========== -->
+  <div class="drawer-overlay" id="drawer-private-2">
+    <div class="drawer">
+      <div class="drawer-header">
+        <span>爬取详情 — @pubghack_2025</span>
+        <button class="drawer-close" onclick="hideDrawer('drawer-private-2')">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <div class="drawer-section-title">渠道信息</div>
+          <div class="drawer-info-grid">
+            <span class="label">目标标识</span><span>@pubghack_2025</span>
+            <span class="label">绑定产品</span><span>和平精英</span>
+            <span class="label">执行时间</span><span>02:01:05</span>
+            <span class="label">消息数</span><span>890 条</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">关键词提取</div>
+          <div class="keyword-tags">
+            <span class="keyword-tag">外挂</span>
+            <span class="keyword-tag">辅助</span>
+            <span class="keyword-tag">破解</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">聊天记录</div>
+          <div class="chat-list">
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">A1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">admin_main <span class="chat-msg-time">2026-06-11 01:55</span></div>
+                <div class="chat-msg-text">和平精英最新辅助，无后座+自瞄，支持全机型。进群看公告。</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">A2</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">member_007 <span class="chat-msg-time">2026-06-11 01:56</span></div>
+                <div class="chat-msg-text">iOS 能用吗？需要越狱吗？</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">A1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">admin_main <span class="chat-msg-time">2026-06-11 01:57</span></div>
+                <div class="chat-msg-text">iOS 免越狱，企业签安装。安卓直接 APK，Root/免Root 双版本。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 私域群聊抽屉 - TG频道 @cheat_all ========== -->
+  <div class="drawer-overlay" id="drawer-private-3">
+    <div class="drawer">
+      <div class="drawer-header">
+        <span>爬取详情 — @cheat_all</span>
+        <button class="drawer-close" onclick="hideDrawer('drawer-private-3')">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <div class="drawer-section-title">渠道信息</div>
+          <div class="drawer-info-grid">
+            <span class="label">目标标识</span><span>@cheat_all</span>
+            <span class="label">绑定产品</span><span>通用</span>
+            <span class="label">执行时间</span><span>02:01:40</span>
+            <span class="label">消息数</span><span>2,100 条</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">关键词提取</div>
+          <div class="keyword-tags">
+            <span class="keyword-tag">外挂</span>
+            <span class="keyword-tag">私服</span>
+            <span class="keyword-tag">GM后台</span>
+            <span class="keyword-tag">破解版</span>
+            <span class="keyword-tag">账号交易</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">聊天记录</div>
+          <div class="chat-list">
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">B1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">channel_bot <span class="chat-msg-time">2026-06-11 01:50</span></div>
+                <div class="chat-msg-text">【每日更新】今日上新：王者荣耀透视、原神私服搭建教程、PUBG 无后座辅助。</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">B2</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">user_game <span class="chat-msg-time">2026-06-11 01:52</span></div>
+                <div class="chat-msg-text">GM 后台怎么买？有演示视频吗？</div>
+              </div>
+            </div>
+            <div class="chat-msg">
+              <div class="chat-msg-avatar">B1</div>
+              <div class="chat-msg-body">
+                <div class="chat-msg-sender">channel_bot <span class="chat-msg-time">2026-06-11 01:53</span></div>
+                <div class="chat-msg-text">@user_game 私信发你链接，支持支付宝/微信/USDT。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 公域网站抽屉 - 闲鱼 王者荣耀外挂 ========== -->
+  <div class="drawer-overlay" id="drawer-public-1">
+    <div class="drawer">
+      <div class="drawer-header">
+        <span>爬取详情 — 闲鱼 · 王者荣耀外挂</span>
+        <button class="drawer-close" onclick="hideDrawer('drawer-public-1')">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <div class="drawer-section-title">渠道信息</div>
+          <div class="drawer-info-grid">
+            <span class="label">渠道</span><span>闲鱼 · 公域网站</span>
+            <span class="label">命中关键词</span><span><span class="keyword-tag">外挂</span></span>
+            <span class="label">执行时间</span><span>02:05:10</span>
+            <span class="label">结果数</span><span>15 条</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">爬取内容</div>
+          <div class="post-list">
+            <div class="post-card">
+              <div class="post-header">
+                <span class="post-author">游戏辅助小店</span>
+                <span class="post-time">2026-06-10 22:15</span>
+              </div>
+              <div class="post-title">【王者荣耀】全英雄透视自瞄，稳定大号，包更新</div>
+              <div class="post-content">价格 88-288 不等，详询客服。支持安卓/iOS/模拟器三端，先试后付，包更新售后。</div>
+              <div class="post-tags"><span class="keyword-tag">外挂</span><span class="keyword-tag">透视</span><span class="keyword-tag">自瞄</span></div>
+            </div>
+            <div class="post-card">
+              <div class="post-header">
+                <span class="post-author">电竞外设批发</span>
+                <span class="post-time">2026-06-10 21:30</span>
+              </div>
+              <div class="post-title">王者新赛季上分神器，免Root 免越狱</div>
+              <div class="post-content">一键开启，支持安卓/iOS/模拟器三端。稳定防封，大号实测无异常。</div>
+              <div class="post-tags"><span class="keyword-tag">外挂</span><span class="keyword-tag">辅助</span></div>
+            </div>
+            <div class="post-card">
+              <div class="post-header">
+                <span class="post-author">手游代练工作室</span>
+                <span class="post-time">2026-06-10 20:00</span>
+              </div>
+              <div class="post-title">专业代练+辅助工具，王者到荣耀一天搞定</div>
+              <div class="post-content">工具单卖 128/月，代练另议。支持全英雄，包更新，24h 在线客服。</div>
+              <div class="post-tags"><span class="keyword-tag">代练</span><span class="keyword-tag">外挂</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 公域网站抽屉 - 闲鱼 和平精英辅助 ========== -->
+  <div class="drawer-overlay" id="drawer-public-2">
+    <div class="drawer">
+      <div class="drawer-header">
+        <span>爬取详情 — 闲鱼 · 和平精英辅助</span>
+        <button class="drawer-close" onclick="hideDrawer('drawer-public-2')">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-section">
+          <div class="drawer-section-title">渠道信息</div>
+          <div class="drawer-info-grid">
+            <span class="label">渠道</span><span>闲鱼 · 公域网站</span>
+            <span class="label">命中关键词</span><span><span class="keyword-tag">辅助</span></span>
+            <span class="label">执行时间</span><span>02:06:20</span>
+            <span class="label">结果数</span><span>8 条</span>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">爬取内容</div>
+          <div class="post-list">
+            <div class="post-card">
+              <div class="post-header">
+                <span class="post-author">吃鸡神器专卖</span>
+                <span class="post-time">2026-06-10 19:45</span>
+              </div>
+              <div class="post-title">和平精英辅助，无后座+自瞄+透视，支持全机型</div>
+              <div class="post-content">月卡 68，季卡 168。稳定防封，支持安卓/iOS/模拟器，24h 在线客服。</div>
+              <div class="post-tags"><span class="keyword-tag">辅助</span><span class="keyword-tag">透视</span><span class="keyword-tag">自瞄</span></div>
+            </div>
+            <div class="post-card">
+              <div class="post-header">
+                <span class="post-author">手游黑科技</span>
+                <span class="post-time">2026-06-10 18:20</span>
+              </div>
+              <div class="post-title">PUBG Mobile 国际服/国服通用辅助</div>
+              <div class="post-content">稳定防封，24h 在线客服。支持全机型，免Root/免越狱，一键开启。</div>
+              <div class="post-tags"><span class="keyword-tag">辅助</span><span class="keyword-tag">PUBG</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>`,
+    'task-summary-detail': `<div class="page active"><div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <span class="action-link" onclick="navigate('transform-tasks')" style="font-size:14px;">← 返回转化任务</span>
+  </div>
+  <div class="detail-title" style="margin-bottom:20px;"> 摘要提取任务详情 — 06-09 04:00</div>
+
+  <!-- 任务概览 Bar -->
+  <div style="display:flex;gap:16px;margin-bottom:24px;">
+    <div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">目标渠道数</div>
+      <div style="font-size:28px;font-weight:600;">82</div>
+    </div>
+    <div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">成功</div>
+      <div style="font-size:28px;font-weight:600;color:var(--success);">82</div>
+    </div>
+    <div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">失败</div>
+      <div style="font-size:28px;font-weight:600;color:var(--danger);">0</div>
+    </div>
+    <div style="flex:1;background:var(--bg-container);border:1px solid var(--border-split);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-1);">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">耗时</div>
+      <div style="font-size:28px;font-weight:600;">12min</div>
+    </div>
+  </div>
+
+  <!-- 各渠道摘要结果 -->
+  <div class="detail-title" style="margin-bottom:16px;font-size:16px;"> 各渠道摘要结果</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>渠道</th><th>渠道类型</th><th>原始消息数</th><th>摘要条数</th><th>标签分布</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <!-- 私域群聊 — TG -->
+        <tr>
+          <td>TG · @waigua_123</td>
+          <td>私域群聊</td>
+          <td>1,240</td>
+          <td>45</td>
+          <td><span class="tag tag-red">外挂</span><span class="tag tag-orange">账号交易</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td><span class="action-link" onclick="showSummaryDrawer('task-summary-drawer-private-1')">查看摘要</span></td>
+        </tr>
+        <!-- 私域群聊 — TG -->
+        <tr>
+          <td>TG · @pubghack_2025</td>
+          <td>私域群聊</td>
+          <td>890</td>
+          <td>32</td>
+          <td><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td><span class="action-link" onclick="showSummaryDrawer('task-summary-drawer-private-2')">查看摘要</span></td>
+        </tr>
+        <!-- 私域群聊 — TG -->
+        <tr>
+          <td>TG · @cheat_all</td>
+          <td>私域群聊</td>
+          <td>2,100</td>
+          <td>68</td>
+          <td><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span><span class="tag tag-green">封号投诉</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td><span class="action-link" onclick="showSummaryDrawer('task-summary-drawer-private-3')">查看摘要</span></td>
+        </tr>
+        <!-- 公域网站 — 闲鱼 -->
+        <tr>
+          <td>闲鱼 · 王者荣耀外挂</td>
+          <td>公域网站</td>
+          <td>124</td>
+          <td>89</td>
+          <td><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td><span class="action-link" onclick="showSummaryDrawer('task-summary-drawer-public-1')">查看摘要</span></td>
+        </tr>
+        <!-- 公域网站 — 百度贴吧 -->
+        <tr>
+          <td>百度贴吧 · 和平精英辅助</td>
+          <td>公域网站</td>
+          <td>86</td>
+          <td>62</td>
+          <td><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></td>
+          <td><span class="tag tag-green"> 成功</span></td>
+          <td><span class="action-link" onclick="showSummaryDrawer('task-summary-drawer-public-2')">查看摘要</span></td>
+        </tr>
+        <!-- 跳过 — QQ群 -->
+        <tr>
+          <td>QQ · 83991922</td>
+          <td>私域群聊</td>
+          <td>0</td>
+          <td>0</td>
+          <td>-</td>
+          <td><span class="tag tag-gray"> 跳过</span></td>
+          <td><span class="action-link" style="color:var(--text-muted);">-</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 任务执行日志 -->
+  <div class="detail-title" style="margin-bottom:16px;font-size:16px;margin-top:24px;"> 任务执行日志</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>时间</th><th>阶段</th><th>说明</th><th>耗时</th></tr></thead>
+      <tbody>
+        <tr><td>04:00:00</td><td>任务启动</td><td>开始执行摘要提取任务，目标渠道 82 个</td><td>-</td></tr>
+        <tr><td>04:00:05</td><td>数据加载</td><td>加载原始消息数据，共 12,450 条</td><td>5s</td></tr>
+        <tr><td>04:02:30</td><td>批量处理</td><td>完成 50/82 渠道摘要提取</td><td>2min 25s</td></tr>
+        <tr><td>04:05:15</td><td>批量处理</td><td>完成 82/82 渠道摘要提取</td><td>2min 45s</td></tr>
+        <tr><td>04:10:00</td><td>结果汇总</td><td>生成摘要报告，共 145 条摘要</td><td>4min 45s</td></tr>
+        <tr><td>04:12:00</td><td>任务完成</td><td>摘要提取任务全部完成，无失败</td><td>2min</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 私域群聊 Drawer 1 -->
+  <div class="summary-drawer-overlay" id="task-summary-drawer-private-1">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — TG · @waigua_123 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('task-summary-drawer-private-1')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">原始消息</span><span>1,240 条</span>
+          <span style="color:var(--text-muted);">相关消息</span><span>890 (71.8%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 5% |  中性: 15% |  负面: 80%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-orange">账号交易</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">话题摘要</div>
+        <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;margin-bottom:16px;">
+          <div style="margin-bottom:8px;"><strong>1. 外挂销售集中讨论</strong> (声量: 620, 负面: 92%)</div>
+          <div style="margin-bottom:8px;"><strong>2. 账号交易信息</strong> (声量: 180, 负面: 85%)</div>
+          <div><strong>3. 辅助工具推广</strong> (声量: 90, 负面: 78%)</div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号，建议重点关注。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 私域群聊 Drawer 2 -->
+  <div class="summary-drawer-overlay" id="task-summary-drawer-private-2">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — TG · @pubghack_2025 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('task-summary-drawer-private-2')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">原始消息</span><span>890 条</span>
+          <span style="color:var(--text-muted);">相关消息</span><span>620 (69.7%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 8% |  中性: 20% |  负面: 72%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">话题摘要</div>
+        <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;margin-bottom:16px;">
+          <div style="margin-bottom:8px;"><strong>1. 破解包分享</strong> (声量: 420, 负面: 88%)</div>
+          <div style="margin-bottom:8px;"><strong>2. 防封技术讨论</strong> (声量: 150, 负面: 65%)</div>
+          <div><strong>3. 代练服务</strong> (声量: 50, 负面: 55%)</div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 发现多个破解包下载链接，涉及最新版本全防+无限子弹。建议技术团队逆向分析提取特征。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 私域群聊 Drawer 3 -->
+  <div class="summary-drawer-overlay" id="task-summary-drawer-private-3">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — TG · @cheat_all (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('task-summary-drawer-private-3')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">原始消息</span><span>2,100 条</span>
+          <span style="color:var(--text-muted);">相关消息</span><span>1,450 (69.0%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 3% |  中性: 12% |  负面: 85%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span><span class="tag tag-green">封号投诉</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">话题摘要</div>
+        <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;margin-bottom:16px;">
+          <div style="margin-bottom:8px;"><strong>1. 多游戏外挂综合交易</strong> (声量: 800, 负面: 90%)</div>
+          <div style="margin-bottom:8px;"><strong>2. 代练工作室推广</strong> (声量: 400, 负面: 75%)</div>
+          <div><strong>3. 封号申诉讨论</strong> (声量: 250, 负面: 60%)</div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 该频道为通用黑产频道，覆盖王者荣耀、和平精英、原神等多款游戏。发现 5 个活跃卖家，涉及外挂、代练、账号交易多条业务线。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 公域网站 Drawer 1 — 闲鱼 -->
+  <div class="summary-drawer-overlay" id="task-summary-drawer-public-1">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 闲鱼 · 王者荣耀外挂 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('task-summary-drawer-public-1')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">记录总数</span><span>124</span>
+          <span style="color:var(--text-muted);">相关记录</span><span>89 (71.8%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 2% |  中性: 8% |  负面: 90%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">相关记录</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>无限金币售卖</strong><a href="http://123.com/38881.html" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@fuyun444</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 14:32</div>
+            <div>无限金币售卖，下载地址：http://123.com/38881.html</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>王者全英雄透视自瞄</strong><a href="https://xianyu.com/item-772881" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@gamehack99</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 11:15</div>
+            <div>稳定大号，包更新，支持安卓/iOS/模拟器。价格 88-288。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span><span class="tag tag-orange">代练</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>新赛季上分神器</strong><a href="https://xianyu.com/item-995511" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@esport_wholesale</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 09:50</div>
+            <div>免Root 免越狱，一键开启。支持三端，大号实测无异常。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>专业代练+辅助工具</strong><a href="https://xianyu.com/item-336622" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@boosting_studio</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 08:20</div>
+            <div>王者到荣耀一天搞定。工具单卖 128/月，代练另议。</div>
+            <div style="margin-top:6px;"><span class="tag tag-orange">代练</span><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>GM后台权限售卖</strong><a href="https://xianyu.com/item-110033" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@gm_seller_001</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 07:05</div>
+            <div>内部GM工具，可修改金币/钻石/装备。演示视频私聊获取。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span><span class="tag tag-blue">GM后台</span></div>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 闲鱼平台今日王者荣耀外挂商品激增 38%，涉及透视、自瞄、GM后台等多类违规商品。发现 5 个活跃卖家账号，建议同步风控团队监控下架。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 公域网站 Drawer 2 — 百度贴吧 -->
+  <div class="summary-drawer-overlay" id="task-summary-drawer-public-2">
+    <div class="summary-drawer">
+      <div class="summary-drawer-header">
+        <span> 摘要详情 — 百度贴吧 · 和平精英辅助 (06-09)</span>
+        <button class="summary-drawer-close" onclick="hideSummaryDrawer('task-summary-drawer-public-2')">×</button>
+      </div>
+      <div class="summary-drawer-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <span style="color:var(--text-muted);">记录总数</span><span>86</span>
+          <span style="color:var(--text-muted);">相关记录</span><span>62 (72.1%)</span>
+          <span style="color:var(--text-muted);">情感分布</span><span> 正面: 5% |  中性: 15% |  负面: 80%</span>
+          <span style="color:var(--text-muted);">分类标签</span><span><span class="tag tag-red">外挂</span><span class="tag tag-blue">破解版</span></span>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">相关记录</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>PUBG 国际服全防辅助</strong><a href="https://tieba.baidu.com/p/99887766" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@pubg_hack_global</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 16:45</div>
+            <div>稳定防封，24h 在线客服。支持全机型，免Root/免越狱。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>和平精英破解版下载</strong><a href="https://pan.baidu.com/s/1abc123" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@crack_master</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 13:20</div>
+            <div>最新版本无限子弹+全防+飞天。APK 直装，无需 Root。</div>
+            <div style="margin-top:6px;"><span class="tag tag-blue">破解版</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>吃鸡神器月卡 68</strong><a href="https://tieba.baidu.com/p/55443311" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@chicken_tool</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 10:00</div>
+            <div>无后座+自瞄+透视，支持全机型。月卡 68，季卡 168。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>代练工作室招代理</strong><a href="https://tieba.baidu.com/p/22334455" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@boost_agent</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 08:30</div>
+            <div>皇冠到王牌一天完成，提供辅助工具。招下级代理，分成 30%。</div>
+            <div style="margin-top:6px;"><span class="tag tag-orange">代练</span></div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;gap:4px;"><strong>防封技术交流帖</strong><a href="https://tieba.baidu.com/p/66778899" style="color:var(--primary);text-decoration:none;" target="_blank"></a></div>
+              <span style="color:var(--text-muted);">@anti_ban_tech</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:12px;margin-bottom:6px;">2026-06-09 06:15</div>
+            <div>分享最新过检测方案，虚拟框架+模块隐藏。实测三天未封。</div>
+            <div style="margin-top:6px;"><span class="tag tag-red">外挂</span></div>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:10px;">关键发现</div>
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:4px;padding:12px;font-size:13px;line-height:1.6;">
+          ️ 百度贴吧和平精英辅助讨论帖活跃，涉及破解版分发、防封技术交流。发现 2 个疑似组织化代练团队，建议关注代理招募模式。
+        </div>
+      </div>
+    </div>
+  </div></div>`,
+    'tokens': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">Token 用量总览</div>
+<div class="filter-bar" style="margin-bottom:16px;">
+<select><option>本月</option><option>上月</option><option>近30天</option><option>近7天</option></select>
+</div>
+<div class="card-grid">
+<div class="stat-card"><div class="stat-label">本月总消耗</div><div class="stat-value">12,450,000</div><div class="stat-change up">↑18% 环比</div></div>
+<div class="stat-card"><div class="stat-label">日均消耗</div><div class="stat-value">415,000</div></div>
+<div class="stat-card"><div class="stat-label">预估月消耗</div><div class="stat-value">13,200,000</div></div>
+<div class="stat-card"><div class="stat-label">预算消耗</div><div class="stat-value">88%</div><div style="margin-top:8px;"><div class="progress-bar" style="width:120px;"><div class="progress-fill" style="width:88%;"></div></div></div></div>
+</div>
+<div class="chart-row">
+<div class="chart-card"><div class="chart-title">Token 消耗趋势（按月）</div><div class="chart-placeholder">面积图 — 1月~6月 Token消耗增长趋势</div></div>
+<div class="chart-card"><div class="chart-title">按产品分布</div><div class="chart-placeholder">环形图 — 王者荣耀35% 和平精英28% …</div></div>
+</div></div>`,
+    'transform-tasks': `<div class="page active"><div class="detail-title" style="margin-bottom:20px;">转化任务</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this, 'tf-tab-schedule')">执行任务</button>
+    <button class="tab" onclick="switchTab(this, 'tf-tab-tags')">分类标签</button>
+    <button class="tab" onclick="switchTab(this, 'tf-tab-rules')">转化规则</button>
+  </div>
+
+  <!-- 执行任务 -->
+  <div class="tab-content active" id="tf-tab-schedule">
+    <div class="table-wrap">
+      <div class="table-top"><span>最近执行记录（按天聚合）</span></div>
+      <table>
+        <thead><tr><th>执行日期</th><th>任务类型</th><th>目标渠道数</th><th>成功</th><th>失败</th><th>执行中</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>06-11</td><td>爬取</td><td>85</td><td>83</td><td>2</td><td>2</td><td><span class="action-link" onclick="navigate('task-crawl-detail')">查看详情</span></td></tr>
+          <tr><td>06-11</td><td>摘要提取</td><td>83</td><td>83</td><td>0</td><td>0</td><td><span class="action-link" onclick="navigate('task-summary-detail')">查看详情</span></td></tr>
+          <tr><td>06-10</td><td>爬取</td><td>84</td><td>82</td><td>2</td><td>0</td><td><span class="action-link" onclick="navigate('task-crawl-detail')">查看详情</span></td></tr>
+          <tr><td>06-10</td><td>摘要提取</td><td>82</td><td>82</td><td>0</td><td>0</td><td><span class="action-link" onclick="navigate('task-summary-detail')">查看详情</span></td></tr>
+          <tr><td>06-09</td><td>爬取</td><td>85</td><td>82</td><td>3</td><td>0</td><td><span class="action-link" onclick="navigate('task-crawl-detail')">查看详情</span></td></tr>
+          <tr><td>06-09</td><td>摘要提取</td><td>82</td><td>82</td><td>0</td><td>0</td><td><span class="action-link" onclick="navigate('task-summary-detail')">查看详情</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- 分类标签 -->
+  <div class="tab-content" id="tf-tab-tags">
+    <div style="margin-bottom:16px;display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="showModal('tag-add-modal')">+ 新增标签</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>标签名称</th><th>编码</th><th>说明</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>外挂</td><td style="font-family:monospace;font-size:12px;">cheat</td><td>外挂交易、讨论</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>私服</td><td style="font-family:monospace;font-size:12px;">private_svr</td><td>私服搭建、推广</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>GM后台</td><td style="font-family:monospace;font-size:12px;">gm_backdoor</td><td>GM后台售卖、利用</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>破解版</td><td style="font-family:monospace;font-size:12px;">cracked</td><td>破解版游戏分发</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>代练</td><td style="font-family:monospace;font-size:12px;">boosting</td><td>代练服务广告</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>刷量</td><td style="font-family:monospace;font-size:12px;">farming</td><td>刷评论、刷评分</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>账号交易</td><td style="font-family:monospace;font-size:12px;">account</td><td>账号买卖</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>封号投诉</td><td style="font-family:monospace;font-size:12px;">ban_appeal</td><td>用户封号申诉讨论</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+          <tr><td>正常讨论</td><td style="font-family:monospace;font-size:12px;">normal</td><td>正常玩家交流</td><td><span class="tag tag-green">启用</span></td><td><span class="action-link" onclick="showModal('tag-edit-modal')">编辑</span><span class="action-link" onclick="showToast('已停用标签','success')">停用</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 转化规则 - 私域群聊 + 公域网站 双 Prompt -->
+  <div class="tab-content" id="tf-tab-rules">
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <!-- 私域群聊 Prompt -->
+      <div style="background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-weight:500;font-size:14px;">私域群聊 · 摘要提取 Prompt</span>
+          <button class="btn btn-sm" onclick="showModal('prompt-private-modal')">编辑模板</button>
+        </div>
+        <div class="code-block">你是一名舆情分析专家。请对以下群聊/频道聊天记录进行分析，提取与 { 绑定产品 } 舆情相关的核心内容，并按要求输出 JSON 格式的摘要结果。
+
+分类维度：{ 分类标签罗列 }
+
+分析要求：
+1、提取话题摘要（不限摘要数量，一句话总结话题，每个总结少于 50 字）
+2、为每个话题摘要进行分类（可多选）
+3、分析判断每条消息与产品相关性，输出存在相关性消息的数量与占比
+4、分析判断每条消息的情感倾向，统计情感分布（正面/中性/负面占比）
+5、关键发现：提取重要的实体（名称、账号、价格、联系方式、群号等）、总结群消息内容与趋势
+
+输出的详情JSON格式：
+{
+  "msgCnt": 1240,
+  "relatedMsgCut": 890,
+  "relatedMsgPer": 0.718,
+  "posMsgPer": 0.050,
+  "neuMsgPer": 0.150,
+  "negMsgPer": 0.800,
+  "topics": [
+    {
+      "summary": "外挂销售集中讨论",
+      "msgCut": 620,
+      "negMsgPer": 0.920,
+      "type": ["cheat"]
+    }
+  ],
+  "descovery": "该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号（账号分别为：xxxx，xxxx，xxxx），建议重点关注。"
+}
+
+注意事项：
+- 过滤噪音
+- 区分事实和推测
+- 关键发现需要提取重要信息如卖家账号、联系方式、交易价格等</div>
+      </div>
+      <!-- 公域网站 Prompt -->
+      <div style="background:var(--card);border:1px solid var(--border-light);border-radius:6px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-weight:500;font-size:14px;">公域网站 · 摘要提取 Prompt</span>
+          <button class="btn btn-sm" onclick="showModal('prompt-public-modal')">编辑模板</button>
+        </div>
+        <div class="code-block">你是一名舆情分析专家。请对以下公域网站记录进行分析，提取与 { 绑定产品 } 舆情相关的核心内容，并按要求输出 JSON 格式的分析结果。
+
+分类维度：{ 分类标签罗列 }
+
+分析要求：
+1、分析每条数据与产品相关性，仅保存存在相关性的记录，统计相关性记录的数量与占比，去除噪音
+2、每条记录的内容提取摘要（摘要少于 50 字）
+3、为每条记录进行分类（可多选）
+4、分析判断每条记录的情感倾向，统计情感分布（正面/中性/负面占比）
+5、关键发现：提取重要的实体（名称、账号、价格、联系方式、群号等）、总结趋势
+
+输出的详情JSON格式：
+{
+  "msgCut": 1240,
+  "relatedMsgCut": 890,
+  "relatedMsgPer": 0.718,
+  "posMsgPer": 0.050,
+  "neuMsgPer": 0.150,
+  "negMsgPer": 0.800,
+  "relatedTopics": [
+    {
+      "title": "王者荣耀无限金币破解版",
+      "summary": "无限金币售卖，下载地址：http://123.com/38881.html",
+      "orientation": "neg",
+      "type": ["cheat"],
+      "author": "@fuyun444",
+      "pubTime": 18283819929,
+      "link": "https://xianyu.com/xiangqingye-399911"
+    }
+  ],
+  "descovery": "该频道今日外挂讨论量激增 45%，主要涉及新赛季透视+自瞄组合。发现 3 个疑似卖家账号（账号分别为：xxxx，xxxx，xxxx），建议重点关注。"
+}
+
+注意事项：
+- 过滤噪音
+- 区分事实和推测
+- 关键发现需要提取重要信息如卖家账号、联系方式、交易价格等</div>
+      </div>
+    </div>
+  </div></div>`
+};
+
+// Override navigate to use inline pages
+navigate = function(route) {
+  // Update sidebar
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.route === route);
+  });
+  
+  // Update breadcrumb
+  const titles = {
+    'dashboard': '概览',
+    'products': '产品管理',
+    'product-detail': '产品详情',
+    'conversation-detail': '对话详情',
+    'agents': 'Agent 管理',
+    'agent-detail': 'Agent 详情',
+    'tokens': 'Token 用量',
+    'billing': '计费管理',
+    'models': '模型管理',
+    'channels': '渠道管理',
+    'channel-detail': '渠道详情',
+    'channel-detail-web': '网站渠道详情',
+    'raw-data': '原始数据',
+    'summary-data': '摘要数据',
+    'transform-tasks': '转化任务',
+    'task-crawl-detail': '爬取任务详情',
+    'task-summary-detail': '摘要提取详情'
+  };
+  document.getElementById('breadcrumb').textContent = titles[route] || route;
+  
+  // Load page content from inline routes
+  const container = document.getElementById('page-container');
+  const html = pageRoutes[route];
+  if (html) {
+    container.innerHTML = html;
+  } else {
+    container.innerHTML = '<div class="page active"><div style="padding:40px;text-align:center;color:var(--danger);">页面未找到: ' + route + '</div></div>';
+  }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  navigate('dashboard');
+});
+</script>
+</body>
+</html>
